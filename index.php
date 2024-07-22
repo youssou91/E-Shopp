@@ -143,7 +143,7 @@ if (isset($_POST['add'])) {
                             echo "<input type='hidden' name='produits[$key][prix]' value='" . $value['prix_unitaire'] . "'>";
                             echo "<input type='hidden' name='produits[$key][quantite]' value='" . $value['quantite'] . "'>";
                         }
-
+ 
                         echo "<input type='hidden' name='total' value='$somme'>";
                         if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
                             echo "<button type='submit' class='btn btn-info btn-block'>Commander</button>";
