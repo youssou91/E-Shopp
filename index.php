@@ -5,7 +5,26 @@ $connect = mysqli_connect('localhost', 'root', '', 'cours343'); // Connexion à 
 if (isset($_POST['add'])) {
     if (isset($_SESSION['cart'])) {
         $item_array_id = array_column($_SESSION['cart'], "id_produit");
-        if (!in_array($_GET['id'], $item_array_id)) {
+        if (in_array($_GET['id'], $item_array_id)) {
+            // Produit déjà dans le panier, augmenter la quantité
+            foreach ($_SESSION['cart'] as $key => $value) {
+                if ($value['id_produit'] == $_GET['id']) {
+                    $new_quantity = $value['quantite'] + $_POST['quantite'];
+                    
+                    // Vérifier si la nouvelle quantité est disponible en stock
+                    $query = "SELECT quantite FROM Produits WHERE id_produit = " . $_GET['id'];
+                    $result = mysqli_query($connect, $query);
+                    $row = mysqli_fetch_assoc($result);
+                    
+                    if ($new_quantity <= $row['quantite']) {
+                        $_SESSION['cart'][$key]['quantite'] = $new_quantity;
+                    } else {
+                        echo '<script>alert("Quantité demandée non disponible en stock")</script>';
+                    }
+                    break;
+                }
+            }
+        } else {
             // Récupérer les informations du produit depuis la base de données
             $query = "SELECT * FROM Produits WHERE id_produit = " . $_GET['id'] . " AND quantite > 0";
             $result = mysqli_query($connect, $query);
@@ -23,8 +42,6 @@ if (isset($_POST['add'])) {
             } else {
                 echo '<script>alert("Produit inexistant en stock")</script>';
             }
-        } else {
-            echo '<script>alert("Le produit est déjà dans le panier")</script>';
         }
     } else {
         $query = "SELECT * FROM Produits WHERE id_produit = " . $_GET['id'] . " AND quantite > 0";
@@ -66,8 +83,8 @@ if (isset($_POST['add'])) {
                                     <h5 class="text-center">$<?= number_format($row['prix_unitaire'], 2); ?></h5>
                                     <input type="hidden" name="nom" value="<?= $row['nom'] ?>">
                                     <input type="hidden" name="prix_unitaire" value="<?= $row['prix_unitaire'] ?>">
-                                    <input type="number" name="quantite" value="1" max="<?= $row['quantite']?>" min="1" class="form-control">
-                                    <input type="submit" name="add" class="btn btn-info btn-block my-2" value="Ajouter au panier">
+                                    <input type="number" name="quantite" value="1" max="<?= $row['quantite']?>" min="1" class="form-control">                                        
+                                    <button type="submit" name="add" class="btn btn-info btn-block justify-center my-1 px-2 py-2 " value="Ajouter au panier"> <i class="bi bi-cart-plus"></i> Ajouter au panier</button>
                                 </form>
                             </div>
                         <?php } ?>
@@ -164,21 +181,5 @@ if (isset($_GET['action'])) {
         echo '<script>window.location="index.php"</script>'; // Redirection après effacement
     }
 }
-// if (isset($_GET['action'])) {
-//     // Supprimer un élément du panier
-//     if ($_GET['action'] == 'supprimer' && isset($_GET['id'])) {
-//         $id_supprimer = $_GET['id'];
-//         foreach ($_SESSION['cart'] as $key => $value) {
-//             if ($key == $id_supprimer) {
-//                 unset($_SESSION['cart'][$key]);
-//             }
-//         }
-//         echo '<script>window.location="index.php"</script>'; // Ajouté pour éviter la duplication des éléments après suppression
-//     }
-//     // Vider le panier
-//     if ($_GET['action'] == 'effacer') {
-//         unset($_SESSION['cart']);
-//         echo '<script>window.location="index.php"</script>'; // Ajouté pour éviter la duplication des éléments après effacement
-//     }
-// }
+
 ?>
