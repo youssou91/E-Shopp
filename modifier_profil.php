@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         'telephone' => $_POST['telephone'],
         'couriel' => $_POST['email'],
         'id_utilisateur' => $userId
-    ];
+    ]; 
 
     if (editProfile($profile)) {
         echo '<script>alert("Profil mis à jour avec succès."); window.location.href = "profile.php";</script>';
