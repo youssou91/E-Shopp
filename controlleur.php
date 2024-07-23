@@ -185,6 +185,10 @@ function addUserDB($user) {
     if (!emailFormat($emailUser)) {
         return "Le format de l'email n'est pas valide.";
     }
+    // Vérifier que la taille du password est valide
+    if (strlen($password) < 6 ||!preg_match('/[a-z]/', $password) ||!preg_match('/[A-Z]/', $password) ||!preg_match('/\d/', $password) ||!preg_match('/[@$!%*?&]/', $password)) {
+        return "Le mot de passe doit contenir au moins 6 caractères, une lettre minuscule, une lettre majuscule, un chiffre et un caractère spécial.";
+    }
 
     $conn = connexionDB();
 
@@ -195,7 +199,7 @@ function addUserDB($user) {
 
     // Vérifier que l'utilisateur a au moins 16 ans
     if (calculAge($datNaiss) < 16) {
-        return "User must be at least 16 years old.";
+        return "L'utilisateur doit avoir au moins 16 ans.";
     }
 
     // Vérifier que les mots de passe sont identiques
@@ -215,7 +219,6 @@ function addUserDB($user) {
     }
     return "Les mots de passe ne correspondent pas.";
 }
-
 // Vérification de l'unicité de l'email lors de l'ajout d'un utilisateur
 function getElementByEmailForAddUser($email, $conn) {
     $sql = "SELECT * FROM utilisateur WHERE couriel = ?";

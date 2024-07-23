@@ -1,25 +1,32 @@
 <?php
 include 'header.php';
 
+$errorMessage = "";
+
 if (isset($_POST['addUser'])) {
     $resultat = addUserDB($_POST);
     if ($resultat === true) {
-        echo "Utilisateur ajouté avec succès.";
+        echo '<div class="alert alert-success" role="alert">Utilisateur ajouté avec succès.</div>';
     } else {
-        echo $resultat; // Affiche le message d'erreur
+        $errorMessage = $resultat;
     }
 }
 ?>
 
 <body class="container mt-5">
+    <?php
+    if ($errorMessage) {
+        echo '<div class="alert alert-danger" role="alert">' . $errorMessage . '</div>';
+    }
+    ?>
     <form method="POST">
         <div class="mb-3">
-            <label for="nom" class="form-label">Nom </label>
+            <label for="nom" class="form-label">Nom</label>
             <input type="text" class="form-control" id="nom" name="nom" placeholder="Saisir le nom" required>
         </div>
         <div class="mb-3">
-            <label for="prenom" class="form-label">Prenom </label>
-            <input type="text" class="form-control" id="prenom" name="prenom" placeholder="Saisir le prenom " required>
+            <label for="prenom" class="form-label">Prenom</label>
+            <input type="text" class="form-control" id="prenom" name="prenom" placeholder="Saisir le prenom" required>
         </div>
         <div class="mb-3">
             <label for="datNaiss" class="form-label">Date de naissance</label>
@@ -30,7 +37,7 @@ if (isset($_POST['addUser'])) {
             <input type="number" class="form-control" id="telephone" name="telephone" placeholder="Saisir le telephone" required>
         </div>
         <div class="mb-3">
-            <label for="couriel" class="form-label">Email </label>
+            <label for="couriel" class="form-label">Email</label>
             <input type="email" class="form-control" id="couriel" name="couriel" placeholder="Saisir l'email" required>
         </div>
         <div class="mb-3">
