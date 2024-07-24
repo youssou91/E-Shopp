@@ -13,7 +13,7 @@ if (isset($_POST['action'])) {
     $action = $_POST['action'];
     switch ($action) {
         case 'bloquer':
-            updateUserStatus($userId, 'bloqué');
+            updateUserStatus($userId, 'bloque');
             break;
         case 'debloquer':
             updateUserStatus($userId, 'actif');
@@ -24,7 +24,6 @@ if (isset($_POST['action'])) {
     }
     echo '<script>window.location.href = "utilisateurs.php";</script>';
 }
-
 // Récupérer la liste des utilisateurs
 $users = getAllUsers();
 ?>
@@ -55,7 +54,7 @@ $users = getAllUsers();
                             <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($user['id_utilisateur']); ?>">
                             <button type="submit" name="action" value="bloquer" class="btn btn-danger btn-sm">Bloquer</button>
                             <button type="submit" name="action" value="debloquer" class="btn btn-success btn-sm">Débloquer</button>
-                            <button type="submit" name="action" value="supprimer" class="btn btn-danger btn-sm">Supprimer</button>
+                            <!-- <button type="submit" name="action" value="supprimer" class="btn btn-danger btn-sm">Supprimer</button> -->
                         </form>
                     </td>
                 </tr>

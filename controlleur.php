@@ -200,6 +200,7 @@ function addUserDB($user) {
     $emailUser = $user['couriel'];
     $password = $user['password'];
     $cpassword = $user['cpassword'];
+    $statut = 'actif'; // Statut par défaut
     
     // Vérifier que l'email est valide
     if (!emailFormat($emailUser)) {
@@ -225,9 +226,9 @@ function addUserDB($user) {
     // Vérifier que les mots de passe sont identiques
     if ($password === $cpassword) {
         $password = password_hash($password, PASSWORD_DEFAULT);
-        $sql = "INSERT INTO utilisateur (nom_utilisateur, prenom, date_naissance, couriel, mot_de_pass, telephone) VALUES (?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO utilisateur (nom_utilisateur, prenom, date_naissance, couriel, mot_de_pass, telephone, statut) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "ssssss", $nom, $prenom, $datNaiss, $emailUser, $password, $telephone); 
+        mysqli_stmt_bind_param($stmt, "sssssss", $nom, $prenom, $datNaiss, $emailUser, $password, $telephone, $statut); 
         $resultat = mysqli_stmt_execute($stmt);
         if ($resultat) {
             $role = getRoleByDescription('client');

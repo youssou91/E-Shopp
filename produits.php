@@ -26,7 +26,7 @@ $produits = getProduits();
                         <td>
                             <img style='width: 50px; height: 50px; border-radius:50%;' src="<?php
                             echo (isset($produit['chemin_image']) && !empty($produit['chemin_image'])) ?
-                            $produit['chemin_image'] : "upload_images/Image 001.jpeg"; ?>">
+                            $produit['chemin_image'] : "images/Image 001.jpeg"; ?>">
                         </td>
                         <td><?= $produit['nom']; ?></td>
                         <td><?= $produit['quantite']; ?></td>

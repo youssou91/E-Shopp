@@ -9,15 +9,21 @@ if (isset($_POST['btn-connexion'])){
     $user = checkUser($email, $password);
     
     if ($user && password_verify($password, $user['mot_de_pass'])) {
-        // Si l'utilisateur est trouvé et que le mot de passe est correct, stocker les informations dans la session
-        $_SESSION['id_utilisateur'] = $user['id_utilisateur'];
-        $_SESSION['nom_utilisateur'] = $user['nom_utilisateur']; // Optionnel, si vous souhaitez stocker le nom de l'utilisateur
-        $_SESSION['user'] = $user;
-        $_SESSION['role'] = $user['role']; // Stocker le rôle de l'utilisateur
-        $_SESSION['loggedin'] = true; // Définir la session de connexion
-        
-        // Rediriger l'utilisateur vers la page d'accueil
-        echo '<script>window.location.href = "index.php";</script>';
+        // Vérifier si l'utilisateur a le statut "actif"
+        if ($user['statut'] === 'actif') {
+            // Si l'utilisateur est trouvé, que le mot de passe est correct et que le statut est actif
+            $_SESSION['id_utilisateur'] = $user['id_utilisateur'];
+            $_SESSION['nom_utilisateur'] = $user['nom_utilisateur']; // Optionnel
+            $_SESSION['user'] = $user;
+            $_SESSION['role'] = $user['role']; // Stocker le rôle de l'utilisateur
+            $_SESSION['loggedin'] = true; // Définir la session de connexion
+            
+            // Rediriger l'utilisateur vers la page d'accueil
+            echo '<script>window.location.href = "index.php";</script>';
+        } else {
+            // Si le statut n'est pas actif, afficher un message d'erreur
+            echo '<div class="alert alert-info" role="alert">Votre compte est désactivé. Veuillez contacter l\'administrateur pour plus d\'informations.</div>';
+        }
     } else {
         // Si l'utilisateur n'est pas trouvé, afficher un message d'erreur
         echo '<div class="alert alert-danger" role="alert">Email ou mot de passe incorrect</div>';
