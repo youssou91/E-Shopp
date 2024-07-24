@@ -31,18 +31,24 @@ include 'controlleur.php';
                             <a class="nav-link active" aria-current="page" href="index.php">Home</a>
                         </li>
                         <!-- Ajoutez d'autres éléments de navigation ici -->
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Products</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">About Us</a>
-                        </li>
+                        <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                            <li class="nav-item">
+                                <a class="nav-link" href="commandesAdmin.php">Commandes</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="produits.php">Produits</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="utilisateurs.php">Utilisateurs</a>
+                            </li>
+                        <?php endif; ?>
                         <!-- Ajouter des liens conditionnels -->
                         <?php if (isset($_SESSION['id_utilisateur'])): ?>
                             <!-- Si l'utilisateur est connecté -->
                             <li class="nav-item">
                                 <a class="nav-link" href="profile.php">Mon Profil</a>
                             </li>
+                            
                             <li class="nav-item">
                                 <a class="btn btn-danger" href="deconnexion.php">
                                     <i class="bi bi-box-arrow-right"></i> 

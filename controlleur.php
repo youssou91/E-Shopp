@@ -99,15 +99,35 @@ function deconnexionDB($conn) {
         mysqli_close($conn);
     }
 }
+
+//reinitialisation du password
+
+        
+            
 function checkUser($email, $password) {
     $conn = connexionDB();
     $user = getElementByEmailForLogin($email, $conn);
+    // if ($user && password_verify($password, $user['mot_de_pass'])) {
+    //     return $user;
+    // } else {
+    //     return false;
+    // }
+    ////////////////////////////////////////////////////////////////////////
+    $stmt = $conn->prepare("SELECT u.*, r.description as role
+        FROM utilisateur u
+        JOIN role_utilisateur ru ON u.id_utilisateur = ru.id_utilisateur
+        JOIN role r ON ru.id_role = r.id_role
+        WHERE u.couriel = ?
+    ");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
+    $stmt->close();
+    return $user;
 
-    if ($user && password_verify($password, $user['mot_de_pass'])) {
-        return $user;
-    } else {
-        return false;
-    }
+    ////////////////////////////////////////////////////////////////
+    
 }
 
    // Vérification de l'unicite de l'email
@@ -171,7 +191,7 @@ function calculAge($anneeNaiss) {
     return $age;
 }
 
-// Ajout d'un utilisateur dans la base de donnees
+// Ajout d'un utilisateur dans la base de donnees a reffaire
 function addUserDB($user) {
     $nom = $user['nom'];
     $prenom = $user['prenom'];
@@ -249,6 +269,55 @@ function getElementByEmailForLogin($email, $conn) {
     return $user;
 }
 
+// Récupérer tous les utilisateurs
+function getAllUsers() {
+    $conn = connexionDB();
+    $sql = "SELECT u.*, r.description as role 
+            FROM utilisateur u 
+            JOIN role_utilisateur ru ON u.id_utilisateur = ru.id_utilisateur 
+            JOIN role r ON ru.id_role = r.id_role";
+    $result = $conn->query($sql);
+    $users = [];
+    while ($row = $result->fetch_assoc()) {
+        $users[] = $row;
+    }
+    $conn->close();
+    return $users;
+}
+
+// Récupérer toutes les commandes
+function getAllcommandes() {
+    $conn = connexionDB();
+    $sql = "SELECT * FROM commande";
+    $result = $conn->query($sql);
+    $commande = [];
+    while ($row = $result->fetch_assoc()) {
+        $commande[] = $row;
+    }
+    $conn->close();
+    return $commande;
+}
+
+// Mettre à jour le statut d'une commande
+function updatecommandetatus($orderId, $status) {
+    $conn = connexionDB();
+    $sql = "UPDATE commande SET statut=? WHERE id_order=?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("si", $status, $orderId);
+    $stmt->execute();
+    $conn->close();
+}
+
+// Mettre à jour le statut d'un utilisateur
+function updateUserStatus($userId, $status) {
+    $conn = connexionDB();
+    $sql = "UPDATE utilisateur SET statut=? WHERE id_utilisateur=?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("si", $status, $userId);
+    $stmt->execute();
+    $conn->close();
+}
+
 // Fonction pour mettre à jour le statut de la commande
 function updateCommandeStatus($commandId, $statusId) {
     $conn = connexionDB();
@@ -289,12 +358,12 @@ function getUserCommandWithStatus($userId) {
     mysqli_stmt_bind_param($stmt, "i", $userId);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
-    $orders = [];
+    $commande = [];
     while ($row = mysqli_fetch_assoc($result)) {
-        $orders[] = $row;
+        $commande[] = $row;
     }
     mysqli_stmt_close($stmt);
-    return $orders;
+    return $commande;
 }
 
 // Fonction de modification du mot de passe
@@ -550,32 +619,32 @@ function updateProduit($produit){
         return true;
     }
     
-    function getAllCommandes(){
-        $sql = "SELECT c.id_commande, c.date_commande, c.prix_total, u.nom_utilisateur 
-                FROM commande c 
-                JOIN utilisateur u ON c.id_utilisateur = u.id_utilisateur";
-        $conn = connexionDB();
+    // function getAllCommandes(){
+    //     $sql = "SELECT c.id_commande, c.date_commande, c.prix_total, u.nom_utilisateur 
+    //             FROM commande c 
+    //             JOIN utilisateur u ON c.id_utilisateur = u.id_utilisateur";
+    //     $conn = connexionDB();
         
-        if (!$conn) {
-            die("Erreur de connexion à la base de données: " . mysqli_connect_error());
-        }
+    //     if (!$conn) {
+    //         die("Erreur de connexion à la base de données: " . mysqli_connect_error());
+    //     }
     
-        $resultats = mysqli_query($conn, $sql);
+    //     $resultats = mysqli_query($conn, $sql);
     
-        if (!$resultats) {
-            die("Erreur lors de l'exécution de la requête: " . mysqli_error($conn));
-        }
+    //     if (!$resultats) {
+    //         die("Erreur lors de l'exécution de la requête: " . mysqli_error($conn));
+    //     }
     
-        $commandes = [];
-        if (mysqli_num_rows($resultats) > 0) {
-            while ($commande = mysqli_fetch_assoc($resultats)) {
-                $commandes[] = $commande;
-            }
-        } 
+    //     $commandes = [];
+    //     if (mysqli_num_rows($resultats) > 0) {
+    //         while ($commande = mysqli_fetch_assoc($resultats)) {
+    //             $commandes[] = $commande;
+    //         }
+    //     } 
     
-        mysqli_close($conn);
-        return $commandes;
-    }
+    //     mysqli_close($conn);
+    //     return $commandes;
+    // }
     
 
 

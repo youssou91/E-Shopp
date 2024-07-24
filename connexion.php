@@ -5,17 +5,15 @@ if (isset($_POST['btn-connexion'])){
     $email = $_POST['couriel'];
     $password = $_POST['mot_de_pass'];
     
-    $conn = connexionDB();
-
-    // Appeler la fonction getElementByEmailForLogin pour vérifier les informations d'identification
-    $user = getElementByEmailForLogin($email, $conn);
+    // Appeler la fonction checkUser pour vérifier les informations d'identification
+    $user = checkUser($email, $password);
     
     if ($user && password_verify($password, $user['mot_de_pass'])) {
         // Si l'utilisateur est trouvé et que le mot de passe est correct, stocker les informations dans la session
-        session_start();
         $_SESSION['id_utilisateur'] = $user['id_utilisateur'];
-        $_SESSION['nom_utilisateur'] = $user['nom_utilisateur'];
+        $_SESSION['nom_utilisateur'] = $user['nom_utilisateur']; // Optionnel, si vous souhaitez stocker le nom de l'utilisateur
         $_SESSION['user'] = $user;
+        $_SESSION['role'] = $user['role']; // Stocker le rôle de l'utilisateur
         $_SESSION['loggedin'] = true; // Définir la session de connexion
         
         // Rediriger l'utilisateur vers la page d'accueil
@@ -28,21 +26,21 @@ if (isset($_POST['btn-connexion'])){
 ?>
 
 <form class="container" method="POST">
-    <h1 class="text-center text-primary">Page de connexion </h1>
+    <h1 class="text-center text-primary">Page de connexion</h1>
     <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">Email address</label>
+        <label for="exampleInputEmail1" class="form-label">Adresse email</label>
         <input type="email" class="form-control" name="couriel" id="exampleInputEmail1" aria-describedby="emailHelp">
     </div>
     <div class="mb-3">
-        <label for="exampleInputPassword1" class="form-label">Password</label>
+        <label for="exampleInputPassword1" class="form-label">Mot de passe</label>
         <input type="password" name="mot_de_pass" class="form-control" id="exampleInputPassword1">
     </div>
     <div class="mb-3 form-check">
-        <a href="" class="btn-btn-info">
+        <a href="forgot_password.php" class="btn btn-info">
             <label class="form-check-label" for="exampleCheck1">Mot de passe oublié</label>
         </a>
         <br>            
-        <a href="addUsers.php" class="btn-btn-info">
+        <a href="addUsers.php" class="btn btn-info">
             <label class="form-check-label" for="exampleCheck1">S'inscrire</label>
         </a>
     </div>
