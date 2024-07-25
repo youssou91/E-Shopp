@@ -146,9 +146,14 @@ function getElementByEmail($email, $password, $conn) {
     mysqli_stmt_close($stmt);
     return $user;
 }
+// Récupération des informations utilisateur et adresse par son id
 function getUserInfo($id_utilisateur){
     $conn = connexionDB();
-    $sql = "SELECT * FROM utilisateur WHERE id_utilisateur = ?";
+    $sql = "SELECT u.*, a.rue, a.numero, a.ville, a.code_postal, a.province, a.pays
+            FROM utilisateur u
+            LEFT JOIN utilisateur_adresse ua ON u.id_utilisateur = ua.id_utilisateur
+            LEFT JOIN adresse a ON ua.id_adresse = a.id_adresse
+            WHERE u.id_utilisateur = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $id_utilisateur);
     $stmt->execute();
@@ -161,26 +166,61 @@ function getUserInfo($id_utilisateur){
     $stmt->close();
     $conn->close();
 }
+
 // Modification des informations utilisateur
-function editProfile($profile) {
+function editProfile($profile, $adresse){
     $conn = connexionDB();
-    $sql = "UPDATE utilisateur SET nom_utilisateur = ?, prenom = ?, date_naissance = ?, telephone = ?, couriel = ? WHERE id_utilisateur = ?";
+    $sql = "UPDATE utilisateur 
+            SET nom_utilisateur = ?, prenom = ?, date_naissance = ?, couriel = ?, telephone = ? 
+            WHERE id_utilisateur = ?";
     $stmt = $conn->prepare($sql);
-    if ($stmt === false) {
-        die('prepare() failed: ' . htmlspecialchars($conn->error));
-    }
-    $stmt->bind_param("sssssi", $profile['nom_utilisateur'], $profile['prenom'], $profile['date_naissance'], $profile['telephone'], $profile['couriel'], $profile['id_utilisateur']);
+    $stmt->bind_param("sssssi", 
+        $profile['nom_utilisateur'], 
+        $profile['prenom'], 
+        $profile['date_naissance'], 
+        $profile['couriel'], 
+        $profile['telephone'], 
+        $profile['id_utilisateur']);
+    
     if ($stmt->execute()) {
-        $stmt->close();
-        $conn->close();
-        return true;
+        $sqlAdresse = "UPDATE adresse 
+                       SET rue = ?, numero = ?, ville = ?, code_postal = ?, province = ?, pays = ? 
+                       WHERE id_adresse = (SELECT id_adresse FROM utilisateur_adresse WHERE id_utilisateur = ?)";
+        $stmtAdresse = $conn->prepare($sqlAdresse);
+        $stmtAdresse->bind_param("ssssssi", 
+            $adresse['rue'], 
+            $adresse['numero'], 
+            $adresse['ville'], 
+            $adresse['code_postal'], 
+            $adresse['province'], 
+            $adresse['pays'], 
+            $profile['id_utilisateur']);
+        
+        return $stmtAdresse->execute();
     } else {
-        echo "Error updating record: " . $conn->error;
-        $stmt->close();
-        $conn->close();
         return false;
     }
 }
+
+// function editProfile($profile) {
+//     $conn = connexionDB();
+//     $sql = "UPDATE utilisateur SET nom_utilisateur = ?, prenom = ?, date_naissance = ?, telephone = ?, couriel = ? WHERE id_utilisateur = ?";
+//     $stmt = $conn->prepare($sql);
+//     if ($stmt === false) {
+//         die('prepare() failed: ' . htmlspecialchars($conn->error));
+//     }
+//     $stmt->bind_param("sssssi", $profile['nom_utilisateur'], $profile['prenom'], $profile['date_naissance'], $profile['telephone'], $profile['couriel'], $profile['id_utilisateur']);
+//     if ($stmt->execute()) {
+//         $stmt->close();
+//         $conn->close();
+//         return true;
+//     } else {
+//         echo "Error updating record: " . $conn->error;
+//         $stmt->close();
+//         $conn->close();
+//         return false;
+//     }
+// }
 
 
     // Calcul de l'âge 
@@ -191,9 +231,88 @@ function calculAge($anneeNaiss) {
     return $age;
 }
 
-// Ajout d'un utilisateur dans la base de donnees a reffaire
+// // Ajout d'un utilisateur dans la base de donnees a reffaire
+// function addUserDB($user) {
+//     $nom = $user['nom'];
+//     $prenom = $user['prenom'];
+//     $datNaiss = $user['datNaiss'];
+//     $telephone = $user['telephone'];
+//     $emailUser = $user['couriel'];
+//     $password = $user['password'];
+//     $cpassword = $user['cpassword'];
+//     $statut = 'actif'; // Statut par défaut
+    
+//     // Vérifier que l'email est valide
+//     if (!emailFormat($emailUser)) {
+//         return "Le format de l'email n'est pas valide.";
+//     }
+//     // Vérifier que la taille du password est valide
+//     if (strlen($password) < 6 ||!preg_match('/[a-z]/', $password) ||!preg_match('/[A-Z]/', $password) ||!preg_match('/\d/', $password) ||!preg_match('/[@$!%*?&]/', $password)) {
+//         return "Le mot de passe doit contenir au moins 6 caractères, une lettre minuscule, une lettre majuscule, un chiffre et un caractère spécial.";
+//     }
+
+//     $conn = connexionDB();
+
+//     // Vérifier que l'email est unique
+//     if (getElementByEmailForAddUser($emailUser, $conn)) {
+//         return "Email existe deja dans la base de donnees.";
+//     }
+
+//     // Vérifier que l'utilisateur a au moins 16 ans
+//     if (calculAge($datNaiss) < 16) {
+//         return "L'utilisateur doit avoir au moins 16 ans.";
+//     }
+
+//     // Vérifier que les mots de passe sont identiques
+//     if ($password === $cpassword) {
+//         $password = password_hash($password, PASSWORD_DEFAULT);
+//         $sql = "INSERT INTO utilisateur (nom_utilisateur, prenom, date_naissance, couriel, mot_de_pass, telephone, statut) VALUES (?, ?, ?, ?, ?, ?, ?)";
+//         $stmt = mysqli_prepare($conn, $sql);
+//         mysqli_stmt_bind_param($stmt, "sssssss", $nom, $prenom, $datNaiss, $emailUser, $password, $telephone, $statut); 
+//         $resultat = mysqli_stmt_execute($stmt);
+//         if ($resultat) {
+//             $role = getRoleByDescription('client');
+//             $id_utilisateur = mysqli_insert_id($conn);
+//             intsertRoleUser($role['id_role'], $id_utilisateur);
+//             return true;
+//         }
+//         return false;
+//     }
+//     return "Les mots de passe ne correspondent pas.";
+// }
 function addUserDB($user) {
-    $nom = $user['nom'];
+    $conn = connexionDB();
+
+    // Démarrer une transaction
+    mysqli_begin_transaction($conn);
+
+    try {
+        // Ajouter un utilisateur
+        $id_utilisateur = insertUser($user, $conn);
+
+        // Ajouter une adresse
+        $id_adresse = insertAddress($user, $conn);
+
+        // Associer l'utilisateur et l'adresse
+        associateUserAddress($id_utilisateur, $id_adresse, $conn);
+
+        // Associer un rôle à l'utilisateur
+        assignUserRole($id_utilisateur, 'client', $conn);
+
+        // Valider la transaction
+        mysqli_commit($conn);
+        return true;
+    } catch (Exception $e) {
+        // Annuler la transaction en cas d'erreur
+        mysqli_rollback($conn);
+        return "Erreur lors de l'ajout de l'utilisateur : " . $e->getMessage();
+    } finally {
+        mysqli_close($conn);
+    }
+}
+
+function insertUser($user, $conn) {
+    $nom = $user['nom_utilisateur'];
     $prenom = $user['prenom'];
     $datNaiss = $user['datNaiss'];
     $telephone = $user['telephone'];
@@ -201,45 +320,81 @@ function addUserDB($user) {
     $password = $user['password'];
     $cpassword = $user['cpassword'];
     $statut = 'actif'; // Statut par défaut
-    
-    // Vérifier que l'email est valide
-    if (!emailFormat($emailUser)) {
-        return "Le format de l'email n'est pas valide.";
-    }
-    // Vérifier que la taille du password est valide
-    if (strlen($password) < 6 ||!preg_match('/[a-z]/', $password) ||!preg_match('/[A-Z]/', $password) ||!preg_match('/\d/', $password) ||!preg_match('/[@$!%*?&]/', $password)) {
-        return "Le mot de passe doit contenir au moins 6 caractères, une lettre minuscule, une lettre majuscule, un chiffre et un caractère spécial.";
-    }
 
-    $conn = connexionDB();
+    // Vérification des données utilisateur
+    validateUserData($emailUser, $password, $cpassword, $datNaiss, $conn);
+
+    // Hashage du mot de passe
+    $password = password_hash($password, PASSWORD_DEFAULT);
+
+    // Insertion dans la table utilisateur
+    $sql = "INSERT INTO utilisateur (nom_utilisateur, prenom, date_naissance, couriel, mot_de_pass, telephone, statut) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "sssssss", $nom, $prenom, $datNaiss, $emailUser, $password, $telephone, $statut);
+    mysqli_stmt_execute($stmt);
+
+    return mysqli_insert_id($conn);
+}
+
+function insertAddress($user, $conn) {
+    $rue = $user['rue'];
+    $numero = $user['numero'];
+    $ville = $user['ville'];
+    $code_postal = $user['code_postal'];
+    $province = $user['province'];
+    $pays = $user['pays'];
+
+    // Insertion dans la table adresse
+    $sql = "INSERT INTO adresse (rue, ville, code_postal, pays, numero, province) VALUES (?, ?, ?, ?, ?, ?)";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "ssssss", $rue, $ville, $code_postal, $pays, $numero, $province);
+    mysqli_stmt_execute($stmt);
+
+    return mysqli_insert_id($conn);
+}
+
+function associateUserAddress($id_utilisateur, $id_adresse, $conn) {
+    $sql = "INSERT INTO utilisateur_adresse (id_utilisateur, id_adresse) VALUES (?, ?)";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "ii", $id_utilisateur, $id_adresse);
+    mysqli_stmt_execute($stmt);
+}
+
+function assignUserRole($id_utilisateur, $role_description, $conn) {
+    $role = getRoleByDescription($role_description);
+    $sql = "INSERT INTO role_utilisateur (id_role, id_utilisateur) VALUES (?, ?)";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "ii", $role['id_role'], $id_utilisateur);
+    mysqli_stmt_execute($stmt);
+}
+
+function validateUserData($email, $password, $cpassword, $birthDate, $conn) {
+    // Vérifier que l'email est valide
+    if (!emailFormat($email)) {
+        throw new Exception("Le format de l'email n'est pas valide.");
+    }
 
     // Vérifier que l'email est unique
-    if (getElementByEmailForAddUser($emailUser, $conn)) {
-        return "Email existe deja dans la base de donnees.";
+    if (getElementByEmailForAddUser($email, $conn)) {
+        throw new Exception("Email existe déjà dans la base de données.");
     }
 
-    // Vérifier que l'utilisateur a au moins 16 ans
-    if (calculAge($datNaiss) < 16) {
-        return "L'utilisateur doit avoir au moins 16 ans.";
+    // Vérifier que la taille du mot de passe est valide
+    if (strlen($password) < 6 || !preg_match('/[a-z]/', $password) || !preg_match('/[A-Z]/', $password) || !preg_match('/\d/', $password) || !preg_match('/[@$!%*?&]/', $password)) {
+        throw new Exception("Le mot de passe doit contenir au moins 6 caractères, une lettre minuscule, une lettre majuscule, un chiffre et un caractère spécial.");
     }
 
     // Vérifier que les mots de passe sont identiques
-    if ($password === $cpassword) {
-        $password = password_hash($password, PASSWORD_DEFAULT);
-        $sql = "INSERT INTO utilisateur (nom_utilisateur, prenom, date_naissance, couriel, mot_de_pass, telephone, statut) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "sssssss", $nom, $prenom, $datNaiss, $emailUser, $password, $telephone, $statut); 
-        $resultat = mysqli_stmt_execute($stmt);
-        if ($resultat) {
-            $role = getRoleByDescription('client');
-            $id_utilisateur = mysqli_insert_id($conn);
-            intsertRoleUser($role['id_role'], $id_utilisateur);
-            return true;
-        }
-        return false;
+    if ($password !== $cpassword) {
+        throw new Exception("Les mots de passe ne correspondent pas.");
     }
-    return "Les mots de passe ne correspondent pas.";
+
+    // Vérifier que l'utilisateur a au moins 16 ans
+    if (calculAge($birthDate) < 16) {
+        throw new Exception("L'utilisateur doit avoir au moins 16 ans.");
+    }
 }
+
 // Vérification de l'unicité de l'email lors de l'ajout d'un utilisateur
 function getElementByEmailForAddUser($email, $conn) {
     $sql = "SELECT * FROM utilisateur WHERE couriel = ?";
@@ -285,11 +440,30 @@ function getAllUsers() {
     $conn->close();
     return $users;
 }
-
+function update_commandeOrderstatut($orderId, $newStatus) {
+    $conn = connexionDB();
+    $stmt = $conn->prepare("UPDATE commande SET statut = ? WHERE id_commande = ?");
+    $stmt->bind_param("si", $newStatus, $orderId);
+    $result = $stmt->execute();
+    $stmt->close();
+    $conn->close();
+    return $result;
+}
 // Récupérer toutes les commandes
 function getAllcommandes() {
     $conn = connexionDB();
-    $sql = "SELECT * FROM commande";
+    // $sql = "SELECT * FROM commande";
+    $sql = "SELECT 
+            commande.id_commande, 
+            commande.id_utilisateur, 
+            commande.date_commande, 
+            commande.prix_total, 
+            utilisateur.nom_utilisateur, 
+            utilisateur.prenom,
+            commande.statut
+        FROM 
+            commande
+        INNER JOIN  utilisateur ON commande.id_utilisateur = utilisateur.id_utilisateur";
     $result = $conn->query($sql);
     $commande = [];
     while ($row = $result->fetch_assoc()) {
@@ -348,10 +522,10 @@ function getCommandeStatuses() {
 // Fonction pour récupérer les commandes d'un utilisateur avec leurs statuts
 function getUserCommandWithStatus($userId) {
     $conn = connexionDB();
-    $sql = "SELECT c.*, s.description as statut_description
-            FROM commande c
-            JOIN statuts_commande s ON c.id_statut = s.id_statut
-            WHERE c.id_utilisateur = ?";
+    $sql = "SELECT *
+            FROM commande
+            
+            WHERE id_utilisateur = ?";
     $stmt = mysqli_prepare($conn, $sql);
     if ($stmt === false) {
         die('Error preparing statement: ' . mysqli_error($conn));
@@ -543,16 +717,17 @@ function updateProduit($produit){
         $id_utilisateur = $commande['id_utilisateur'];
         $date_commande = $commande['date_commande'];
         $prix_total = $commande['prix_total'];
+        $statut = 'En attente'; 
         $conn = connexionDB();
-        $id_statut = getStatutIdByDescription('En attente', $conn);
+        // $id_statut = getStatutIdByDescription('En attente', $conn);
         
-        if ($id_statut === null) {
-            return "Le statut par défaut 'En attente' n'existe pas dans la base de données.";
-        }
+        // if ($id_statut === null) {
+        //     return "Le statut par défaut 'En attente' n'existe pas dans la base de données.";
+        // }
 
-        $sql = "INSERT INTO commande (id_utilisateur, id_statut, date_commande, prix_total) VALUES (?, ?, NOW(), ?)";
+        $sql = "INSERT INTO commande (id_utilisateur, statut, date_commande, prix_total) VALUES (?, ?, NOW(), ?)";
         $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "iis", $commande['id_utilisateur'], $id_statut, $commande['prix_total']);
+        mysqli_stmt_bind_param($stmt, "iss", $commande['id_utilisateur'], $statut, $commande['prix_total']);
         
         $resultat = mysqli_stmt_execute($stmt);
     

@@ -42,24 +42,19 @@ $userOrders = getUserCommandWithStatus($userId);
         <h1>Mon Profil</h1>
         <div class="row">
             <div class="col-md-5">
-                <h3>Informations personnelles</h3>
+            <h3>Informations personnelles</h3>
                 <p><strong>Nom :</strong> <?= htmlspecialchars($userInfo['nom_utilisateur']) ?></p>
                 <p><strong>Prénom :</strong> <?= htmlspecialchars($userInfo['prenom']) ?></p>
                 <p><strong>Email :</strong> <?= htmlspecialchars($userInfo['couriel']) ?></p>
-                <p><strong>Date de naissance :</strong> <?= htmlspecialchars($userInfo['date_naissance']) ?></p>
                 <p><strong>Téléphone :</strong> <?= htmlspecialchars($userInfo['telephone']) ?></p>
+                <h4>Adresse</h4>
+                <p><strong>Rue :</strong> <?= htmlspecialchars($userInfo['numero']).' '.htmlspecialchars($userInfo['rue'])  ?></p>
+                <p><strong>Code Postal :</strong> <?= htmlspecialchars($userInfo['code_postal']) ?></p>
+                <p><strong>Ville :</strong> <?=htmlspecialchars($userInfo['ville']).', '. htmlspecialchars($userInfo['province']) ?></p>
+                <p><strong>Pays :</strong> <?= htmlspecialchars($userInfo['pays']) ?></p>
                 <a href="modifier_profil.php" class="btn btn-warning">Modifier les informations</a>
                 <a href="modifier_mot_de_passe.php" class="btn btn-danger">Modifier le mot de passe</a>
             </div>
-
-            <!-- <div class="col-md-5">
-                <h3>Informations personnelles</h3>
-                <p><strong>Nom :</strong> <?= htmlspecialchars($userInfo['nom_utilisateur']) ?></p>
-                <p><strong>Prénom :</strong> <?= htmlspecialchars($userInfo['prenom']) ?></p>
-                <p><strong>Email :</strong> <?= htmlspecialchars($userInfo['couriel']) ?></p>
-                <p><strong>Date de naissance :</strong> <?= htmlspecialchars($userInfo['date_naissance']) ?></p>
-                <p><strong>Téléphone :</strong> <?= htmlspecialchars($userInfo['telephone']) ?></p>
-            </div> -->
             <div class="col-md-7">
                 <h3>Mes Commandes</h3>
                 <?php if (count($userOrders) > 0): ?>
@@ -69,17 +64,17 @@ $userOrders = getUserCommandWithStatus($userId);
                                 <th>ID Commande</th>
                                 <th>Date</th>
                                 <th>Montant</th>
-                                <th>Status</th>
+                                <th>Statut</th>
                                 <th>Détails</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php foreach ($userOrders as $order): ?>
-                                <tr class="<?= getStatusClass($order['statut_description']) ?>">
+                                <tr>
                                     <td><?= htmlspecialchars($order['id_commande']) ?></td>
                                     <td><?= htmlspecialchars($order['date_commande']) ?></td>
                                     <td> $<?= htmlspecialchars($order['prix_total']) ?></td>
-                                    <td><?= htmlspecialchars($order['statut_description']) ?></td>
+                                    <td><?= htmlspecialchars($order['statut']) ?></td>
                                     <td><a href="details_commande.php?id_commande=<?= htmlspecialchars($order['id_commande'])?>" class="btn btn-info">Détails</a></td>
                                 </tr>
                             <?php endforeach; ?>

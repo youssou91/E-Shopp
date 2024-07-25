@@ -28,7 +28,10 @@ include 'controlleur.php';
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="index.php">Home</a>
+                            <a class="nav-link active" aria-current="page" href="index.php">Accueil</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="contact.php">Contact</a>
                         </li>
                         <!-- Ajoutez d'autres éléments de navigation ici -->
                         <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
@@ -65,7 +68,9 @@ include 'controlleur.php';
                             </li>
                         <?php endif; ?>
                     </ul>
+
                     <form class="d-flex" role="search">
+                        
                         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                         <button class="btn btn-outline-success" type="submit">Search</button>
                     </form>

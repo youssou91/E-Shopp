@@ -17,9 +17,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         'telephone' => $_POST['telephone'],
         'couriel' => $_POST['email'],
         'id_utilisateur' => $userId
-    ]; 
+    ];
 
-    if (editProfile($profile)) {
+    $adresse = [
+        'rue' => $_POST['rue'],
+        'numero' => $_POST['numero'],
+        'ville' => $_POST['ville'],
+        'code_postal' => $_POST['code_postal'],
+        'province' => $_POST['province'],
+        'pays' => $_POST['pays']
+    ];
+
+    if (editProfile($profile, $adresse)) {
         echo '<script>alert("Profil mis à jour avec succès."); window.location.href = "profile.php";</script>';
         exit;
     } else {
@@ -40,6 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="container mt-5">
         <h1>Modifier Profil</h1>
         <form method="post">
+            <!-- Informations Personnelles -->
             <div class="mb-3">
                 <label for="nom" class="form-label">Nom</label>
                 <input type="text" class="form-control" id="nom" name="nom" value="<?= htmlspecialchars($userInfo['nom_utilisateur']) ?>" required>
@@ -60,6 +70,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <label for="email" class="form-label">Email</label>
                 <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($userInfo['couriel']) ?>" required>
             </div>
+
+            <!-- Adresse -->
+            <div class="mb-3">
+                <label for="rue" class="form-label">Rue</label>
+                <input type="text" class="form-control" id="rue" name="rue" value="<?= htmlspecialchars($userInfo['rue']) ?>" required>
+            </div>
+            <div class="mb-3">
+                <label for="numero" class="form-label">Numéro</label>
+                <input type="text" class="form-control" id="numero" name="numero" value="<?= htmlspecialchars($userInfo['numero']) ?>" required>
+            </div>
+            <div class="mb-3">
+                <label for="ville" class="form-label">Ville</label>
+                <input type="text" class="form-control" id="ville" name="ville" value="<?= htmlspecialchars($userInfo['ville']) ?>" required>
+            </div>
+            <div class="mb-3">
+                <label for="code_postal" class="form-label">Code Postal</label>
+                <input type="text" class="form-control" id="code_postal" name="code_postal" value="<?= htmlspecialchars($userInfo['code_postal']) ?>" required>
+            </div>
+            <div class="mb-3">
+                <label for="province" class="form-label">Province</label>
+                <input type="text" class="form-control" id="province" name="province" value="<?= htmlspecialchars($userInfo['province']) ?>" required>
+            </div>
+            <div class="mb-3">
+                <label for="pays" class="form-label">Pays</label>
+                <input type="text" class="form-control" id="pays" name="pays" value="<?= htmlspecialchars($userInfo['pays']) ?>" required>
+            </div>
+            
             <button type="submit" class="btn btn-primary">Modifier</button>
         </form>
     </div>
