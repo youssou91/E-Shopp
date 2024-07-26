@@ -45,15 +45,16 @@ include 'controlleur.php';
                                 <a class="nav-link" href="utilisateurs.php">Utilisateurs</a>
                             </li>
                         <?php endif; ?>
+                    </ul>
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                         <!-- Ajouter des liens conditionnels -->
                         <?php if (isset($_SESSION['id_utilisateur'])): ?>
                             <!-- Si l'utilisateur est connecté -->
                             <li class="nav-item">
                                 <a class="nav-link" href="profile.php">Mon Profil</a>
                             </li>
-                            
                             <li class="nav-item">
-                                <a class="btn btn-danger" href="deconnexion.php">
+                                <a class="btn btn-danger nav-link" href="deconnexion.php">
                                     <i class="bi bi-box-arrow-right"></i> 
                                     Déconnexion
                                 </a>
@@ -61,22 +62,36 @@ include 'controlleur.php';
                         <?php else: ?>
                             <!-- Si l'utilisateur n'est pas connecté -->
                             <li class="nav-item">
-                                <a class="btn btn-primary" href="connexion.php">
+                                <a class="btn btn-primary nav-link" href="connexion.php">
                                     <i class="bi bi-box-arrow-in-right"></i> 
                                     Connexion
                                 </a>
                             </li>
                         <?php endif; ?>
                     </ul>
-
-                    <form class="d-flex" role="search">
-                        
-                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                        <button class="btn btn-outline-success" type="submit">Search</button>
-                    </form>
                 </div>
             </div>
         </nav>
     </header>
+    <!-- Contenu de votre site ici -->
+     <!-- afficher une image en forme de carroselle -->
+      <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
+        <ol class="carousel-indicators">
+          <li data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active"></li>
+          <li data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1"></li>
+          <li data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2"></li>
+        </ol>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img style='width: 200px; height: 200px;'  src="./images/color.jpg"  class="d-block w-100" alt="...">
+            </div>
+            <div class="carousel-item">
+                <img style='width: 200px; height: 200px;'  src="./images/Media.jpg"  class="d-block w-100" alt="...">
+            </div>
+            <div class="carousel-item">
+                <img style='width: 200px; height: 200px;'  src="./images/black.jpg"  class="d-block w-100" alt="...">
+            </div>  
+        </div>
+    </div>
 </body>
 </html>
