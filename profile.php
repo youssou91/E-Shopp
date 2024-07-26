@@ -9,6 +9,26 @@ if (!isset($_SESSION['id_utilisateur'])) {
 $userId = $_SESSION['id_utilisateur'];
 $userInfo = getUserInfo($userId);
 $userOrders = getUserCommandWithStatus($userId);
+
+// Affichage des commandes avec leur état
+// Traitement des actions des commandes
+if (isset($_POST['action'])) {
+    $orderId = $_POST['order_id']; // Assurez-vous que le nom du champ correspond
+    $action = $_POST['action'];
+    switch ($action) {
+        case 'traiter':
+            update_commandeOrderstatut($orderId, 'En traitement');
+            break;
+        case 'expédier':
+            update_commandeOrderstatut($orderId, 'En expédition');
+            break;
+        case 'annuler':
+            update_commandeOrderstatut($orderId, 'Annulee');
+            break;
+    }
+    echo '<script>window.location.href = "commandesAdmin.php";</script>';
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -57,15 +77,18 @@ $userOrders = getUserCommandWithStatus($userId);
             </div>
             <div class="col-md-7">
                 <h3>Mes Commandes</h3>
+               
                 <?php if (count($userOrders) > 0): ?>
-                    <table class="table table-bordered">
+                    <!-- <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>ID Commande</th>
+                                <th>#</th>
                                 <th>Date</th>
                                 <th>Montant</th>
                                 <th>Statut</th>
                                 <th>Détails</th>
+                                <th>Annuler</th>
+                                <th>Paiement</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -73,9 +96,59 @@ $userOrders = getUserCommandWithStatus($userId);
                                 <tr>
                                     <td><?= htmlspecialchars($order['id_commande']) ?></td>
                                     <td><?= htmlspecialchars($order['date_commande']) ?></td>
-                                    <td> $<?= htmlspecialchars($order['prix_total']) ?></td>
+                                    <td>$<?= htmlspecialchars($order['prix_total']) ?></td>
                                     <td><?= htmlspecialchars($order['statut']) ?></td>
-                                    <td><a href="details_commande.php?id_commande=<?= htmlspecialchars($order['id_commande'])?>" class="btn btn-info">Détails</a></td>
+                                    <td><a href="details_commande.php?id_commande=<?= htmlspecialchars($order['id_commande']) ?>" class="btn btn-info">Détails</a></td>
+                                    <td>
+                                        <form action="annuler_commande.php" method="post">
+                                            <input type="hidden" name="id_commande" value="<?= htmlspecialchars($order['id_commande']) ?>">
+                                            <button type="submit" name="action" value="annuler" class="btn btn-danger " <?php echo ($order['statut'] == 'annulee') ? 'disabled' : ''; ?>>Annuler</button>
+
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <form action="paiement_commande.php" method="post">
+                                            <input type="hidden" name="id_commande" value="<?= htmlspecialchars($order['id_commande']) ?>">
+                                            <button type="submit" class="btn btn-success" <?= ($order['statut'] == 'annulee') ? 'disabled' : '' ?>>Payer</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table> -->
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Date</th>
+                                <th>Montant</th>
+                                <th>Statut</th>
+                                <th>Détails</th>
+                                <th>Annuler</th>
+                                <th>Paiement</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php $index = 1; ?>
+                            <?php foreach ($userOrders as $order): ?>
+                                <tr>
+                                    <td><?= $index++; ?></td>
+                                    <td><?= htmlspecialchars($order['date_commande']) ?></td>
+                                    <td>$<?= htmlspecialchars($order['prix_total']) ?></td>
+                                    <td><?= htmlspecialchars($order['statut']) ?></td>
+                                    <td><a href="details_commande.php?id_commande=<?= htmlspecialchars($order['id_commande']) ?>" class="btn btn-info">Détails</a></td>
+                                    <td>
+                                        <form action="annuler_commande.php" method="post">
+                                            <input type="hidden" name="id_commande" value="<?= htmlspecialchars($order['id_commande']) ?>">
+                                            <button type="submit" name="action" value="annuler" class="btn btn-danger" <?= ($order['statut'] == 'annulee') ? 'disabled' : '' ?>>Annuler</button>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <form action="paiement_commande.php" method="post">
+                                            <input type="hidden" name="id_commande" value="<?= htmlspecialchars($order['id_commande']) ?>">
+                                            <button type="submit" class="btn btn-success" <?= ($order['statut'] == 'annulee') ? 'disabled' : '' ?>>Payer</button>
+                                        </form>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>

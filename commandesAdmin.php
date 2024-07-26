@@ -52,9 +52,9 @@ $orders = getAllcommandes();
                     <td>
                         <form method="post" style="display:inline-block;">
                             <input type="hidden" name="order_id" value="<?php echo htmlspecialchars($order['id_commande']); ?>">
-                            <button type="submit" name="action" value="traiter" class="btn btn-success btn-sm" <?php echo ($order['statut'] == 'annulée') ? 'disabled' : ''; ?>>Traiter</button>
-                            <button type="submit" name="action" value="expédier" class="btn btn-warning btn-sm" <?php echo ($order['statut'] == 'annulée') ? 'disabled' : ''; ?>>Expédier</button>
-                            <button type="submit" name="action" value="annuler" class="btn btn-danger btn-sm" <?php echo ($order['statut'] == 'annulée') ? 'disabled' : ''; ?>>Annuler</button>
+                            <button type="submit" name="action" value="traiter" class="btn btn-success btn-sm" <?php echo ($order['statut'] == 'annulee') ? 'disabled' : ''; ?>>Traiter</button>
+                            <button type="submit" name="action" value="expédier" class="btn btn-warning btn-sm" <?php echo ($order['statut'] == 'annulee') ? 'disabled' : ''; ?>>Expédier</button>
+                            <button type="submit" name="action" value="annuler" class="btn btn-danger btn-sm" <?php echo ($order['statut'] == 'annulee') ? 'disabled' : ''; ?>>Annuler</button>
                         </form>
                     </td>
                 </tr>
