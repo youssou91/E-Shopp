@@ -20,7 +20,7 @@ if (isset($_POST['action'])) {
             update_commandeOrderstatut($orderId, 'En traitement');
             break;
         case 'expédier':
-            update_commandeOrderstatut($orderId, 'En expédition');
+            update_commandeOrderstatut($orderId, 'En expedition');
             break;
         case 'annuler':
             update_commandeOrderstatut($orderId, 'Annulee');
@@ -62,7 +62,7 @@ if (isset($_POST['action'])) {
         <h1>Mon Profil</h1>
         <div class="row">
             <div class="col-md-5">
-            <h3>Informations personnelles</h3>
+                <h3>Informations personnelles</h3>
                 <p><strong>Nom :</strong> <?= htmlspecialchars($userInfo['nom_utilisateur']) ?></p>
                 <p><strong>Prénom :</strong> <?= htmlspecialchars($userInfo['prenom']) ?></p>
                 <p><strong>Email :</strong> <?= htmlspecialchars($userInfo['couriel']) ?></p>
@@ -77,45 +77,7 @@ if (isset($_POST['action'])) {
             </div>
             <div class="col-md-7">
                 <h3>Mes Commandes</h3>
-               
                 <?php if (count($userOrders) > 0): ?>
-                    <!-- <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Date</th>
-                                <th>Montant</th>
-                                <th>Statut</th>
-                                <th>Détails</th>
-                                <th>Annuler</th>
-                                <th>Paiement</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($userOrders as $order): ?>
-                                <tr>
-                                    <td><?= htmlspecialchars($order['id_commande']) ?></td>
-                                    <td><?= htmlspecialchars($order['date_commande']) ?></td>
-                                    <td>$<?= htmlspecialchars($order['prix_total']) ?></td>
-                                    <td><?= htmlspecialchars($order['statut']) ?></td>
-                                    <td><a href="details_commande.php?id_commande=<?= htmlspecialchars($order['id_commande']) ?>" class="btn btn-info">Détails</a></td>
-                                    <td>
-                                        <form action="annuler_commande.php" method="post">
-                                            <input type="hidden" name="id_commande" value="<?= htmlspecialchars($order['id_commande']) ?>">
-                                            <button type="submit" name="action" value="annuler" class="btn btn-danger " <?php echo ($order['statut'] == 'annulee') ? 'disabled' : ''; ?>>Annuler</button>
-
-                                        </form>
-                                    </td>
-                                    <td>
-                                        <form action="paiement_commande.php" method="post">
-                                            <input type="hidden" name="id_commande" value="<?= htmlspecialchars($order['id_commande']) ?>">
-                                            <button type="submit" class="btn btn-success" <?= ($order['statut'] == 'annulee') ? 'disabled' : '' ?>>Payer</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table> -->
                     <table class="table table-bordered">
                         <thead>
                             <tr>
@@ -134,19 +96,19 @@ if (isset($_POST['action'])) {
                                 <tr>
                                     <td><?= $index++; ?></td>
                                     <td><?= htmlspecialchars($order['date_commande']) ?></td>
-                                    <td>$<?= htmlspecialchars($order['prix_total']) ?></td>
+                                    <td>$ <?= htmlspecialchars($order['prix_total']) ?></td>
                                     <td><?= htmlspecialchars($order['statut']) ?></td>
                                     <td><a href="details_commande.php?id_commande=<?= htmlspecialchars($order['id_commande']) ?>" class="btn btn-info">Détails</a></td>
                                     <td>
                                         <form action="annuler_commande.php" method="post">
                                             <input type="hidden" name="id_commande" value="<?= htmlspecialchars($order['id_commande']) ?>">
-                                            <button type="submit" name="action" value="annuler" class="btn btn-danger" <?= ($order['statut'] == 'annulee') ? 'disabled' : '' ?>>Annuler</button>
+                                            <button type="submit" name="action" value="annuler" class="btn btn-danger" <?= ($order['statut'] == 'Annulee') ? 'disabled' : '' ?>>Annuler</button>
                                         </form>
                                     </td>
                                     <td>
                                         <form action="paiement_commande.php" method="post">
                                             <input type="hidden" name="id_commande" value="<?= htmlspecialchars($order['id_commande']) ?>">
-                                            <button type="submit" class="btn btn-success" <?= ($order['statut'] == 'annulee') ? 'disabled' : '' ?>>Payer</button>
+                                            <button type="submit" class="btn btn-success" <?= ($order['statut'] == 'Annulee') ? 'disabled' : '' ?>>Payer</button>
                                         </form>
                                     </td>
                                 </tr>
