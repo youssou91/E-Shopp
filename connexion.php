@@ -54,3 +54,5 @@ if (isset($_POST['btn-connexion'])){
     </div>
     <input type="submit" name="btn-connexion" value="Se connecter" class="btn btn-primary">
 </form>
+
+<?php include 'footer.php';?>

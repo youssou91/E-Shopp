@@ -221,6 +221,8 @@ if (isset($_POST['add'])) {
             });
         </script>
     </body>
+    <?php include 'footer.php'; ?>
+
 </html>
 
 <?php

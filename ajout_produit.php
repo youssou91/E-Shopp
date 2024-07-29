@@ -67,4 +67,6 @@
             <button type="submit" class="btn btn-primary" name="btnAjout">Submit</button>          
         </form>      
     </body>  
+    <!-- footer -->
+     <?php include 'footer.php';?>
 </html>                                                                                                                                                                                                                                                                                                                                                        

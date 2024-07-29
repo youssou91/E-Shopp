@@ -60,6 +60,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     <input type="submit" class="btn btn-primary" name="btn-mdp" value="Modifier un produit">
 </form>
 
+<?php include 'footer.php'; ?>
 
 </body>
 </html>

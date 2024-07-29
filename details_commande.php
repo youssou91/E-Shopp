@@ -68,6 +68,4 @@ $result_produits = mysqli_stmt_get_result($stmt_produits);
         </tbody>
     </table>
 </div>
-<?php
-
-?>
+<?php include 'footer.php'; ?>
