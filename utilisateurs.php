@@ -18,9 +18,7 @@ if (isset($_POST['action'])) {
         case 'debloquer':
             updateUserStatus($userId, 'actif');
             break;
-        case 'supprimer':
-            deleteUser($userId);
-            break;
+        
     }
     echo '<script>window.location.href = "utilisateurs.php";</script>';
 }
