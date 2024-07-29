@@ -91,28 +91,18 @@ function emailFormat($email) {
     $pattern = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/';
     return preg_match($pattern, $email) === 1;
 }
-
 //fonction de deconnexion
-
 function deconnexionDB($conn) {
     if (isset($conn)) {
         mysqli_close($conn);
     }
 }
 
-//reinitialisation du password
-
-        
-            
+//reinitialisation du password           
 function checkUser($email, $password) {
     $conn = connexionDB();
     $user = getElementByEmailForLogin($email, $conn);
-    // if ($user && password_verify($password, $user['mot_de_pass'])) {
-    //     return $user;
-    // } else {
-    //     return false;
-    // }
-    ////////////////////////////////////////////////////////////////////////
+   
     $stmt = $conn->prepare("SELECT u.*, r.description as role
         FROM utilisateur u
         JOIN role_utilisateur ru ON u.id_utilisateur = ru.id_utilisateur
@@ -201,29 +191,7 @@ function editProfile($profile, $adresse){
         return false;
     }
 }
-
-// function editProfile($profile) {
-//     $conn = connexionDB();
-//     $sql = "UPDATE utilisateur SET nom_utilisateur = ?, prenom = ?, date_naissance = ?, telephone = ?, couriel = ? WHERE id_utilisateur = ?";
-//     $stmt = $conn->prepare($sql);
-//     if ($stmt === false) {
-//         die('prepare() failed: ' . htmlspecialchars($conn->error));
-//     }
-//     $stmt->bind_param("sssssi", $profile['nom_utilisateur'], $profile['prenom'], $profile['date_naissance'], $profile['telephone'], $profile['couriel'], $profile['id_utilisateur']);
-//     if ($stmt->execute()) {
-//         $stmt->close();
-//         $conn->close();
-//         return true;
-//     } else {
-//         echo "Error updating record: " . $conn->error;
-//         $stmt->close();
-//         $conn->close();
-//         return false;
-//     }
-// }
-
-
-    // Calcul de l'âge 
+   // Calcul de l'âge 
 function calculAge($anneeNaiss) {
     $annee = new DateTime($anneeNaiss);
     $anneeCourante = new DateTime();
@@ -231,55 +199,6 @@ function calculAge($anneeNaiss) {
     return $age;
 }
 
-// // Ajout d'un utilisateur dans la base de donnees a reffaire
-// function addUserDB($user) {
-//     $nom = $user['nom'];
-//     $prenom = $user['prenom'];
-//     $datNaiss = $user['datNaiss'];
-//     $telephone = $user['telephone'];
-//     $emailUser = $user['couriel'];
-//     $password = $user['password'];
-//     $cpassword = $user['cpassword'];
-//     $statut = 'actif'; // Statut par défaut
-    
-//     // Vérifier que l'email est valide
-//     if (!emailFormat($emailUser)) {
-//         return "Le format de l'email n'est pas valide.";
-//     }
-//     // Vérifier que la taille du password est valide
-//     if (strlen($password) < 6 ||!preg_match('/[a-z]/', $password) ||!preg_match('/[A-Z]/', $password) ||!preg_match('/\d/', $password) ||!preg_match('/[@$!%*?&]/', $password)) {
-//         return "Le mot de passe doit contenir au moins 6 caractères, une lettre minuscule, une lettre majuscule, un chiffre et un caractère spécial.";
-//     }
-
-//     $conn = connexionDB();
-
-//     // Vérifier que l'email est unique
-//     if (getElementByEmailForAddUser($emailUser, $conn)) {
-//         return "Email existe deja dans la base de donnees.";
-//     }
-
-//     // Vérifier que l'utilisateur a au moins 16 ans
-//     if (calculAge($datNaiss) < 16) {
-//         return "L'utilisateur doit avoir au moins 16 ans.";
-//     }
-
-//     // Vérifier que les mots de passe sont identiques
-//     if ($password === $cpassword) {
-//         $password = password_hash($password, PASSWORD_DEFAULT);
-//         $sql = "INSERT INTO utilisateur (nom_utilisateur, prenom, date_naissance, couriel, mot_de_pass, telephone, statut) VALUES (?, ?, ?, ?, ?, ?, ?)";
-//         $stmt = mysqli_prepare($conn, $sql);
-//         mysqli_stmt_bind_param($stmt, "sssssss", $nom, $prenom, $datNaiss, $emailUser, $password, $telephone, $statut); 
-//         $resultat = mysqli_stmt_execute($stmt);
-//         if ($resultat) {
-//             $role = getRoleByDescription('client');
-//             $id_utilisateur = mysqli_insert_id($conn);
-//             intsertRoleUser($role['id_role'], $id_utilisateur);
-//             return true;
-//         }
-//         return false;
-//     }
-//     return "Les mots de passe ne correspondent pas.";
-// }
 function addUserDB($user) {
     $conn = connexionDB();
 
@@ -593,8 +512,6 @@ function getStatusClass($statusDescription) {
     }
 }
 
-////////////////////////////////////////////
-
     // lister les produits de la base de données
 function getProduits(){
     $sql = "SELECT p.*, i.chemin_image FROM  produits p LEFT JOIN image i ON p.id_produit = i.id_produit";
@@ -625,7 +542,7 @@ function getProduitById($id){
             return false;
         }
     }
-    return mysqli_fetch_assoc($resultat);
+    return $resultat;
 }
     //Modification de produits
 function updateProduit($produit){
@@ -719,11 +636,6 @@ function updateProduit($produit){
         $prix_total = $commande['prix_total'];
         $statut = 'En attente'; 
         $conn = connexionDB();
-        // $id_statut = getStatutIdByDescription('En attente', $conn);
-        
-        // if ($id_statut === null) {
-        //     return "Le statut par défaut 'En attente' n'existe pas dans la base de données.";
-        // }
 
         $sql = "INSERT INTO commande (id_utilisateur, statut, date_commande, prix_total) VALUES (?, ?, NOW(), ?)";
         $stmt = mysqli_prepare($conn, $sql);
@@ -793,272 +705,6 @@ function updateProduit($produit){
         }
     
         return true;
-    }
-    
-    // function getAllCommandes(){
-    //     $sql = "SELECT c.id_commande, c.date_commande, c.prix_total, u.nom_utilisateur 
-    //             FROM commande c 
-    //             JOIN utilisateur u ON c.id_utilisateur = u.id_utilisateur";
-    //     $conn = connexionDB();
-        
-    //     if (!$conn) {
-    //         die("Erreur de connexion à la base de données: " . mysqli_connect_error());
-    //     }
-    
-    //     $resultats = mysqli_query($conn, $sql);
-    
-    //     if (!$resultats) {
-    //         die("Erreur lors de l'exécution de la requête: " . mysqli_error($conn));
-    //     }
-    
-    //     $commandes = [];
-    //     if (mysqli_num_rows($resultats) > 0) {
-    //         while ($commande = mysqli_fetch_assoc($resultats)) {
-    //             $commandes[] = $commande;
-    //         }
-    //     } 
-    
-    //     mysqli_close($conn);
-    //     return $commandes;
-    // }
-    
+    }   
 
-
-
-
-
-    ////////////////////////////////////////////////////////////////
-    //récupérer la liste des commandes d'un utilisateur
-    function getCommandesByUtilisateur($id_utilisateur) {
-        $sql = "SELECT c.*, p.nom, p.prix_unitaire, p.quantite FROM commande c JOIN ligne_commande lc ON c.id_commande = lc.id_commande JOIN produits p ON lc.id_produit = p.id_produit WHERE c.id_utilisateur =?";
-        $conn = connexionDB();
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "i", $id_utilisateur);
-        mysqli_stmt_execute($stmt);
-        $resultats = mysqli_stmt_get_result($stmt);
-        $commandes = [];
-        if (mysqli_num_rows($resultats) > 0) {
-            while ($commande = mysqli_fetch_assoc($resultats)) {
-                $commandes[] = $commande;
-            }
-            mysqli_close($conn);
-            return $commandes;
-            
-        } else {
-            mysqli_close($conn);
-            return false;
-        }
-    }
-    //récupérer la liste des commandes par date
-    function getCommandesByDate($date_debut, $date_fin) {
-        $sql = "SELECT c.*, p.nom, p.prix_unitaire, p.quantite FROM commande c JOIN ligne_commande lc ON c.id_commande = lc.id_commande JOIN produits p ON lc.id_produit = p.id_produit WHERE c.date_commande BETWEEN? AND?";
-        $conn = connexionDB();
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "ss", $date_debut, $date_fin);
-        mysqli_stmt_execute($stmt);
-        $resultats = mysqli_stmt_get_result($stmt);
-        $commandes = [];
-        if (mysqli_num_rows($resultats) > 0) {
-            while ($commande = mysqli_fetch_assoc($resultats)) {
-                $commandes[] = $commande;
-            }
-            mysqli_close($conn);
-            return $commandes;
-        }else {
-            mysqli_close($conn);
-            return false;
-        }
-    }
-    //récupérer la liste des commandes par montant
-    function getCommandesByMontant($montant_min, $montant_max) {
-        $sql = "SELECT c.*, p.nom, p.prix_unitaire, p.quantite FROM commande c JOIN ligne_commande lc ON c.id_commande = lc.id_commande JOIN produits p ON lc.id_produit = p.id_produit WHERE c.prix_total BETWEEN? AND?";
-        $conn = connexionDB();
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "dd", $montant_min, $montant_max);
-        mysqli_stmt_execute($stmt);
-        $resultats = mysqli_stmt_get_result($stmt);
-        $commandes = [];
-        if (mysqli_num_rows($resultats) > 0) {
-            while ($commande = mysqli_fetch_assoc($resultats)) {
-                $commandes[] = $commande;
-            }
-            mysqli_close($conn);
-            return $commandes;
-        }
-        else {
-            mysqli_close($conn);
-            return false;
-        }
-    }
-    //récupérer la liste des commandes par produit
-    function getCommandesByProduit($id_produit) {
-        $sql = "SELECT c.*, p.nom, p.prix_unitaire, p.quantite FROM commande c JOIN ligne_commande lc ON c.id_commande = lc.id_commande JOIN produits p ON lc.id_produit = p.id_produit WHERE lc.id_produit =?";
-        $conn = connexionDB();
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "i", $id_produit);
-        mysqli_stmt_execute($stmt);
-        $resultats = mysqli_stmt_get_result($stmt);
-        $commandes = [];
-        if (mysqli_num_rows($resultats) > 0) {
-            while ($commande = mysqli_fetch_assoc($resultats)) {
-                $commandes[] = $commande;
-            }
-            mysqli_close($conn);
-            return $commandes;
-            
-        } else {
-            mysqli_close($conn);
-            return false;
-        }
-    }
-    //récupérer la liste des commandes par categorie
-    function getCommandesByCategorie($id_categorie) {
-        $sql = "SELECT c.*, p.nom, p.prix_unitaire, p.quantite FROM commande c JOIN ligne_commande lc ON c.id_commande = lc.id_commande JOIN produits p ON lc.id_produit = p.id_produit JOIN categorie_produit cp ON p.id_produit = cp.id_produit WHERE cp.id_categorie =?";
-        $conn = connexionDB();
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "i", $id_categorie);
-        mysqli_stmt_execute($stmt);
-        $resultats = mysqli_stmt_get_result($stmt);
-        $commandes = [];
-        if (mysqli_num_rows($resultats) > 0) {
-            while ($commande = mysqli_fetch_assoc($resultats)) {
-                $commandes[] = $commande;
-            }
-            mysqli_close($conn);
-            return $commandes;
-            
-        } else {
-            mysqli_close($conn);
-            return false;
-        }
-    }
-    //récupérer la liste des commandes par utilisateur et par produit
-    function getCommandesByUtilisateurAndProduit($id_utilisateur, $id_produit) {
-        $sql = "SELECT c.*, p.nom, p.prix_unitaire, p.quantite FROM commande c JOIN ligne_commande lc ON c.id_commande = lc.id_commande JOIN produits p ON lc.id_produit = p.id_produit WHERE c.id_utilisateur =? AND lc.id_produit =?";
-        $conn = connexionDB();
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "ii", $id_utilisateur, $id_produit);
-        mysqli_stmt_execute($stmt);
-        $resultats = mysqli_stmt_get_result($stmt);
-        $commandes = [];
-        if (mysqli_num_rows($resultats) > 0) {
-            while ($commande = mysqli_fetch_assoc($resultats)) {
-                $commandes[] = $commande;
-            }
-            mysqli_close($conn);
-            return $commandes;
-        }
-        else {
-            mysqli_close($conn);
-            return false;
-        }
-    }
-    //récupérer la liste des commandes par utilisateur et par categorie
-    function getCommandesByUtilisateurAndCategorie($id_utilisateur, $id_categorie) {
-        $sql = "SELECT c.*, p.nom, p.prix_unitaire, p.quantite FROM commande c JOIN ligne_commande lc ON c.id_commande = lc.id_commande JOIN produits p ON lc.id_produit = p.id_produit JOIN categorie_produit cp ON p.id_produit = cp.id_produit WHERE c.id_utilisateur =? AND cp.id_categorie =?";
-        $conn = connexionDB();
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "ii", $id_utilisateur, $id_categorie);
-        mysqli_stmt_execute($stmt);
-        $resultats = mysqli_stmt_get_result($stmt);
-        $commandes = [];
-        if (mysqli_num_rows($resultats) > 0) {
-            while ($commande = mysqli_fetch_assoc($resultats)) {
-                $commandes[] = $commande;
-            }
-            mysqli_close($conn);
-            return $commandes;
-            
-        } else {
-            mysqli_close($conn);
-            return false;
-        }
-    }
-    //récupérer la liste des commandes par utilisateur, par produit et par categorie
-    function getCommandesByUtilisateurAndProduitAndCategorie($id_utilisateur, $id_produit, $id_categorie) {
-        $sql = "SELECT c.*, p.nom, p.prix_unitaire, p.quantite FROM commande c JOIN ligne_commande lc ON c.id_commande = lc.id_commande JOIN produits p ON lc.id_produit = p.id_produit JOIN categorie_produit cp ON p.id_produit = cp.id_produit WHERE c.id_utilisateur =? AND lc.id_produit =? AND cp.id_categorie =?";
-        $conn = connexionDB();
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "iii", $id_utilisateur, $id_produit, $id_categorie);
-        mysqli_stmt_execute($stmt);
-        $resultats = mysqli_stmt_get_result($stmt);
-        $commandes = [];
-        if (mysqli_num_rows($resultats) > 0) {
-            while ($commande = mysqli_fetch_assoc($resultats)) {
-                $commandes[] = $commande;
-            }
-            mysqli_close($conn);
-            return $commandes;
-            
-        } else {
-            mysqli_close($conn);
-            return false;
-        }
-    }
-    //récupérer la liste des commandes par utilisateur, par produit et par categorie avec pagination
-    function getCommandesByUtilisateurAndProduitAndCategoriePagination($id_utilisateur, $id_produit, $id_categorie, $page, $nb_commandes_par_page) {
-        $offset = ($page - 1) * $nb_commandes_par_page;
-        $sql = "SELECT c.*, p.nom, p.prix_unitaire, p.quantite FROM commande c JOIN ligne_commande lc ON c.id_commande = lc.id_commande JOIN produits p ON lc.id_produit = p.id_produit JOIN categorie_produit cp ON p.id_produit = cp.id_produit WHERE c.id_utilisateur =? AND lc.id_produit =? AND cp.id_categorie =? ORDER BY c.date_commande DESC LIMIT?,?";
-        $conn = connexionDB();
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "iiii", $id_utilisateur, $id_produit, $id_categorie, $offset, $nb_commandes_par_page);
-        mysqli_stmt_execute($stmt);
-        $resultats = mysqli_stmt_get_result($stmt);
-        $commandes = [];
-        if (mysqli_num_rows($resultats) > 0) {
-            while ($commande = mysqli_fetch_assoc($resultats)) {
-                $commandes[] = $commande;
-            }
-            mysqli_close($conn);
-            return $commandes;
-            
-        } else {
-            mysqli_close($conn);
-            return false;
-        }
-    }
-    //récupérer la liste des commandes par utilisateur, par produit et par categorie avec tri par date de commande
-    function getCommandesByUtilisateurAndProduitAndCategorieTriDate($id_utilisateur, $id_produit, $id_categorie, $tri) {
-        $sql = "SELECT c.*, p.nom, p.prix_unitaire, p.quantite FROM commande c JOIN ligne_commande lc ON c.id_commande = lc.id_commande JOIN produits p ON lc.id_produit = p.id_produit JOIN categorie_produit cp ON p.id_produit = cp.id_produit WHERE c.id_utilisateur =? AND lc.id_produit =? AND cp.id_categorie =? ORDER BY c.date_commande $tri";
-        $conn = connexionDB();
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "iii", $id_utilisateur, $id_produit, $id_categorie);
-        mysqli_stmt_execute($stmt);
-        $resultats = mysqli_stmt_get_result($stmt);
-        $commandes = [];
-        if (mysqli_num_rows($resultats) > 0) {
-            while ($commande = mysqli_fetch_assoc($resultats)) {
-                $commandes[] = $commande;
-            }
-            mysqli_close($conn);
-            return $commandes;
-            
-        } else {
-            mysqli_close($conn);
-            return false;
-        }
-    }
-    //récupérer la liste des commandes par utilisateur, par produit et par categorie avec tri par montant de commande
-    function getCommandesByUtilisateurAndProduitAndCategorieTriMontant($id_utilisateur, $id_produit, $id_categorie, $tri) {
-        $sql = "SELECT c.*, p.nom, p.prix_unitaire, p.quantite FROM commande c JOIN ligne_commande lc ON c.id_commande = lc.id_commande JOIN produits p ON lc.id_produit = p.id_produit JOIN categorie_produit cp ON p.id_produit = cp.id_produit WHERE c.id_utilisateur =? AND lc.id_produit =? AND cp.id_categorie =? ORDER BY c.montant_commande $tri";
-        $conn = connexionDB();
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "iii", $id_utilisateur, $id_produit, $id_categorie);
-        mysqli_stmt_execute($stmt);
-        $resultats = mysqli_stmt_get_result($stmt);
-        $commandes = [];
-        if (mysqli_num_rows($resultats) > 0) {
-            while ($commande = mysqli_fetch_assoc($resultats)) {
-                $commandes[] = $commande;
-            }
-            mysqli_close($conn);
-            return $commandes;
-            
-        } else {
-            mysqli_close($conn);
-            return false;
-        }
-    }
-             
 ?>
-    
