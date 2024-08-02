@@ -1,4 +1,5 @@
 <?php
+// include 'controlleur.php';
 
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     ?>
@@ -7,7 +8,6 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     </script>
     <?php
     exit();
-
 } else {
     include 'header.php';
     $id_produit = $_GET['id'];
@@ -19,10 +19,12 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
         </script>
         <?php
     } else {
-
+        ?>
+        <script>
+            alert('Erreur lors de la suppression du produit.');
+            window.location.href = "produits.php";
+        </script>
+        <?php
     }
-
 }
-
-
 ?>
