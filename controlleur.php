@@ -102,7 +102,6 @@ function deconnexionDB($conn) {
 function checkUser($email, $password) {
     $conn = connexionDB();
     $user = getElementByEmailForLogin($email, $conn);
-   
     $stmt = $conn->prepare("SELECT u.*, r.description as role
         FROM utilisateur u
         JOIN role_utilisateur ru ON u.id_utilisateur = ru.id_utilisateur
@@ -191,6 +190,7 @@ function editProfile($profile, $adresse){
         return false;
     }
 }
+
    // Calcul de l'âge 
 function calculAge($anneeNaiss) {
     $annee = new DateTime($anneeNaiss);
@@ -439,6 +439,8 @@ function getCommandeStatuses() {
 }
 
 // Fonction pour récupérer les commandes d'un utilisateur avec leurs statuts
+
+
 function getUserCommandWithStatus($userId) {
     $conn = connexionDB();
     $sql = "SELECT *
@@ -558,153 +560,209 @@ function updateProduit($produit){
     mysqli_stmt_bind_param($stmt, "sdssii", $nom, $prix, $description, $courte_description, $quantite, $id);
     return mysqli_stmt_execute($stmt);
 }
-    //Suppression de produits
-    function deleteProduit($id){
-        // suppression de l'image de produit
-        $sqlImage = "DELETE FROM image WHERE id_produit = ?";
-        $conn = connexionDB();
-        $stmtImage = mysqli_prepare($conn, $sqlImage);
-        mysqli_stmt_bind_param($stmtImage, "i", $id);
-        mysqli_stmt_execute($stmtImage);
-        // suppression du produit
-        $sql = "DELETE FROM produits WHERE id_produit =?";
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "i", $id);
-        return mysqli_stmt_execute($stmt);
+
+function deleteProduitPromotion($idProduit) {
+    $conn = connexionDB();
+    $sql = "DELETE FROM produitpromotion WHERE id_produit = ?";
+    if ($stmtDeletePromo = mysqli_prepare($conn, $sql)) {
+        mysqli_stmt_bind_param($stmtDeletePromo, "i", $idProduit);
+        mysqli_stmt_execute($stmtDeletePromo);
+        mysqli_stmt_close($stmtDeletePromo);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function deleteProduitImages($idProduit) {
+    $conn = connexionDB();
+    $sql = "DELETE FROM image WHERE id_produit = ?";
+    if ($stmtDeleteImage = mysqli_prepare($conn, $sql)) {
+        mysqli_stmt_bind_param($stmtDeleteImage, "i", $idProduit);
+        mysqli_stmt_execute($stmtDeleteImage);
+        mysqli_stmt_close($stmtDeleteImage);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function deleteProduit($idProduit) {
+    $conn = connexionDB();
+
+    // Supprimer les enregistrements associés dans produitpromotion
+    if (!deleteProduitPromotion($idProduit)) {
+        return false;
     }
 
-    function getRoleByDescription($description){
-        $sql = "SELECT * FROM role WHERE description =?";
-        $conn = connexionDB();
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "s", $description);
-        mysqli_stmt_execute($stmt);
-        $resultat =  mysqli_stmt_get_result($stmt);
-        if (mysqli_num_rows($resultat) > 0) {
-            return mysqli_fetch_assoc($resultat);
-        } else {
-            return false;
-        }
+    // Supprimer les enregistrements associés dans image
+    if (!deleteProduitImages($idProduit)) {
+        return false;
     }
 
-    function intsertRoleUser($id_role, $id_utilisateur){
-        $sql = "INSERT INTO role_utilisateur (id_role, id_utilisateur) VALUES (?,?)";
-        $conn = connexionDB();
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "ii", $id_role, $id_utilisateur);
-        return mysqli_stmt_execute($stmt);
+    // Ensuite, supprimer l'enregistrement du produit
+    $queryDeleteProduit = "DELETE FROM produits WHERE id_produit = ?";
+    if ($stmtDeleteProduit = mysqli_prepare($conn, $queryDeleteProduit)) {
+        mysqli_stmt_bind_param($stmtDeleteProduit, "i", $idProduit);
+        mysqli_stmt_execute($stmtDeleteProduit);
+        mysqli_stmt_close($stmtDeleteProduit);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function getRoleByDescription($description){
+    $sql = "SELECT * FROM role WHERE description =?";
+    $conn = connexionDB();
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "s", $description);
+    mysqli_stmt_execute($stmt);
+    $resultat =  mysqli_stmt_get_result($stmt);
+    if (mysqli_num_rows($resultat) > 0) {
+        return mysqli_fetch_assoc($resultat);
+    } else {
+        return false;
+    }
+}
+
+function intsertRoleUser($id_role, $id_utilisateur){
+    $sql = "INSERT INTO role_utilisateur (id_role, id_utilisateur) VALUES (?,?)";
+    $conn = connexionDB();
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "ii", $id_role, $id_utilisateur);
+    return mysqli_stmt_execute($stmt);
+}
+
+function getUserByEmail($email) {
+    $sql = 'select * from utilisateur where couriel = ?';
+    $conn = connexionDB();
+    $stmt = mysqli_prepare($conn, $sql);
+    if ($stmt === false) {
+        die('Erreur de préparation de la requête : ' . mysqli_error($conn));
+    }
+    mysqli_stmt_bind_param($stmt, "s", $email);
+    mysqli_stmt_execute($stmt);
+    $resultat = mysqli_stmt_get_result($stmt);
+    if ($resultat === false) {
+        die('Erreur d\'exécution de la requête : ' . mysqli_stmt_error($stmt));
+    }
+    if (mysqli_num_rows($resultat) > 0) {
+        return mysqli_fetch_assoc($resultat);
+    } else {
+        return false;
     }
 
-    function getUserByEmail($email) {
-        $sql = 'select * from utilisateur where couriel = ?';
-        $conn = connexionDB();
-        $stmt = mysqli_prepare($conn, $sql);
-        if ($stmt === false) {
-            die('Erreur de préparation de la requête : ' . mysqli_error($conn));
+}
+//return la liste des categories de la base de donnees
+function getAllCategories() {
+    $conn = connexionDB();
+    $sql = "SELECT * FROM categorie";
+    $resultats = mysqli_query($conn, $sql);
+    $categories = [];
+    if (mysqli_num_rows($resultats) > 0) {
+        while ($categorie = mysqli_fetch_assoc($resultats)) {
+            $categories[] = $categorie;
         }
-        mysqli_stmt_bind_param($stmt, "s", $email);
-        mysqli_stmt_execute($stmt);
-        $resultat = mysqli_stmt_get_result($stmt);
-        if ($resultat === false) {
-            die('Erreur d\'exécution de la requête : ' . mysqli_stmt_error($stmt));
-        }
-        if (mysqli_num_rows($resultat) > 0) {
-            return mysqli_fetch_assoc($resultat);
-        } else {
-            return false;
-        }
-
     }
-    //return la liste des categories de la base de donnees
-    function getAllCategories() {
-        $conn = connexionDB();
-        $sql = "SELECT * FROM categorie";
-        $resultats = mysqli_query($conn, $sql);
-        $categories = [];
-        if (mysqli_num_rows($resultats) > 0) {
-            while ($categorie = mysqli_fetch_assoc($resultats)) {
-                $categories[] = $categorie;
+    mysqli_close($conn);
+    return $categories;
+}  
+
+function addCommande($commande) {
+    $id_utilisateur = $commande['id_utilisateur'];
+    $date_commande = $commande['date_commande'];
+    $prix_total = $commande['prix_total'];
+    $statut = 'En attente'; 
+    $conn = connexionDB();
+
+    $sql = "INSERT INTO commande (id_utilisateur, statut, date_commande, prix_total) VALUES (?, ?, NOW(), ?)";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "iss", $commande['id_utilisateur'], $statut, $commande['prix_total']);
+    
+    $resultat = mysqli_stmt_execute($stmt);
+
+    if ($resultat) {
+        $id_commande = mysqli_insert_id($conn);
+        foreach ($commande['produits'] as $produit) {
+            if (!addProduitCommande($conn, $id_commande, $produit)) {
+                echo "Erreur lors de l'ajout du produit à la commande.<br>";
+                mysqli_close($conn);
+                return false;
             }
         }
         mysqli_close($conn);
-        return $categories;
-    }  
-    
-    function addCommande($commande) {
-        $id_utilisateur = $commande['id_utilisateur'];
-        $date_commande = $commande['date_commande'];
-        $prix_total = $commande['prix_total'];
-        $statut = 'En attente'; 
-        $conn = connexionDB();
-
-        $sql = "INSERT INTO commande (id_utilisateur, statut, date_commande, prix_total) VALUES (?, ?, NOW(), ?)";
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "iss", $commande['id_utilisateur'], $statut, $commande['prix_total']);
-        
-        $resultat = mysqli_stmt_execute($stmt);
-    
-        if ($resultat) {
-            $id_commande = mysqli_insert_id($conn);
-            foreach ($commande['produits'] as $produit) {
-                if (!addProduitCommande($conn, $id_commande, $produit)) {
-                    echo "Erreur lors de l'ajout du produit à la commande.<br>";
-                    mysqli_close($conn);
-                    return false;
-                }
-            }
-            mysqli_close($conn);
-            return $id_commande;
-        } else {
-            echo "Erreur lors de l'insertion dans commande: " . mysqli_stmt_error($stmt) . "<br>";
-            mysqli_close($conn);
-            return false;
-        }
+        return $id_commande;
+    } else {
+        echo "Erreur lors de l'insertion dans commande: " . mysqli_stmt_error($stmt) . "<br>";
+        mysqli_close($conn);
+        return false;
     }
-    
-    function addProduitCommande($conn, $id_commande, $produit) {
-        $id_produit = $produit['id_produit'];
-        $quantite = $produit['quantite'];
-    
-        // Vérifiez si le produit existe dans la table produits
-        $stmtCheckProduit = mysqli_prepare($conn, "SELECT id_produit FROM produits WHERE id_produit = ?");
-        mysqli_stmt_bind_param($stmtCheckProduit, "i", $id_produit);
-        mysqli_stmt_execute($stmtCheckProduit);
-        mysqli_stmt_store_result($stmtCheckProduit);
-    
-        if (mysqli_stmt_num_rows($stmtCheckProduit) > 0) {
-            // Le produit existe, nous pouvons insérer
-            $stmtProduitCommande = mysqli_prepare($conn, "INSERT INTO produit_commande (id_commande, id_produit, quantite) VALUES (?,?,?)");
-            mysqli_stmt_bind_param($stmtProduitCommande, "iii", $id_commande, $id_produit, $quantite);
-    
-            if (!mysqli_stmt_execute($stmtProduitCommande)) {
-                echo "Erreur lors de l'insertion dans produit_commande: " . mysqli_stmt_error($stmtProduitCommande) . "<br>";
-                return false;
-            }           
-    
-            // Mettre à jour la quantité du produit dans la table produits
-            if (!miseAJourQuantiteProduit($conn, $id_produit, $quantite)) {
-                return false;
-            }
-        } else {
-            echo "Erreur: Le produit avec l'ID $id_produit n'existe pas.<br>";
-            return false;
-        }
-    
-        mysqli_stmt_close($stmtCheckProduit);
-        return true;
-    }
-    
-    function miseAJourQuantiteProduit($conn, $id_produit, $quantite) {
-        $sql = "UPDATE produits SET quantite = quantite - ? WHERE id_produit = ?";
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "ii", $quantite, $id_produit);
-    
-        if (!mysqli_stmt_execute($stmt)) {
-            echo "Erreur lors de la mise à jour de la quantité du produit: " . mysqli_stmt_error($stmt) . "<br>";
-            return false;
-        }
-    
-        return true;
-    }   
+}
 
-?>
+function addProduitCommande($conn, $id_commande, $produit) {
+    $id_produit = $produit['id_produit'];
+    $quantite = $produit['quantite'];
+
+    // Vérifiez si le produit existe dans la table produits
+    $stmtCheckProduit = mysqli_prepare($conn, "SELECT id_produit FROM produits WHERE id_produit = ?");
+    mysqli_stmt_bind_param($stmtCheckProduit, "i", $id_produit);
+    mysqli_stmt_execute($stmtCheckProduit);
+    mysqli_stmt_store_result($stmtCheckProduit);
+
+    if (mysqli_stmt_num_rows($stmtCheckProduit) > 0) {
+        // Le produit existe, nous pouvons insérer
+        $stmtProduitCommande = mysqli_prepare($conn, "INSERT INTO produit_commande (id_commande, id_produit, quantite) VALUES (?,?,?)");
+        mysqli_stmt_bind_param($stmtProduitCommande, "iii", $id_commande, $id_produit, $quantite);
+
+        if (!mysqli_stmt_execute($stmtProduitCommande)) {
+            echo "Erreur lors de l'insertion dans produit_commande: " . mysqli_stmt_error($stmtProduitCommande) . "<br>";
+            return false;
+        }           
+
+        // Mettre à jour la quantité du produit dans la table produits
+        if (!miseAJourQuantiteProduit($conn, $id_produit, $quantite)) {
+            return false;
+        }
+    } else {
+        echo "Erreur: Le produit avec l'ID $id_produit n'existe pas.<br>";
+        return false;
+    }
+
+    mysqli_stmt_close($stmtCheckProduit);
+    return true;
+}
+
+function miseAJourQuantiteProduit($conn, $id_produit, $quantite) {
+    $sql = "UPDATE produits SET quantite = quantite - ? WHERE id_produit = ?";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "ii", $quantite, $id_produit);
+
+    if (!mysqli_stmt_execute($stmt)) {
+        echo "Erreur lors de la mise à jour de la quantité du produit: " . mysqli_stmt_error($stmt) . "<br>";
+        return false;
+    }
+
+    return true;
+}   
+
+//fonction de gestion de la promotion
+function appliquerPromotion($total, $code_promotion) {
+    global $connect;
+    // Vérifiez si la promotion est valide et active
+    global $connect;
+    $query = "SELECT * FROM Promotions WHERE code_promotion = '$code_promotion' AND date_debut <= CURDATE() AND date_fin >= CURDATE()";
+    $result = mysqli_query($connect, $query);
+
+    if ($result && mysqli_num_rows($result) > 0) {
+        $promotion = mysqli_fetch_assoc($result);
+        if ($promotion['type'] == 'pourcentage') {
+            $total -= ($total * ($promotion['valeur'] / 100));
+        } elseif ($promotion['type'] == 'montant') {
+            $total -= $promotion['valeur'];
+        }
+    } else {
+        echo '<script>alert("Code promotionnel invalide ou expiré.")</script>';
+    }
+    return $total;
+}

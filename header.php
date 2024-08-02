@@ -31,9 +31,8 @@ include 'controlleur.php';
                             <a class="nav-link active" aria-current="page" href="index.php">Accueil</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="contact.php">Contact</a>
+                            <a class="nav-link" aria-current="page" href="contact.php">Contact</a>
                         </li>
-                        <!-- Ajoutez d'autres éléments de navigation ici -->
                         <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
                             <li class="nav-item">
                                 <a class="nav-link" href="commandesAdmin.php">Commandes</a>
@@ -43,6 +42,9 @@ include 'controlleur.php';
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="utilisateurs.php">Utilisateurs</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="admin_promotions.php">Promo</a>
                             </li>
                         <?php endif; ?>
                     </ul>
