@@ -42,14 +42,8 @@ if (isset($_POST['btn-connexion'])){
         <input type="password" name="mot_de_pass" class="form-control" id="exampleInputPassword1">
     </div>
     <div class="mb-3 form-check">
-        <!-- <a href="forgot_password.php" class="btn btn-info">
-            <label class="form-check-label" for="exampleCheck1">Mot de passe oublié</label>
-        </a>
-        <hr>             -->
         <a href="addUsers.php">
-            <!-- <label class="form-check-label" for="exampleCheck1"> -->
                 S'inscrire
-            <!-- </label> -->
         </a>
     </div>
     <input type="submit" name="btn-connexion" value="Se connecter" class="btn btn-primary">

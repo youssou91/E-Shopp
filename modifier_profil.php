@@ -7,7 +7,7 @@ if (!isset($_SESSION['id_utilisateur'])) {
 }
 
 $userId = $_SESSION['id_utilisateur'];
-$userInfo = getUserInfo($userId); // Vous devez avoir cette fonction pour récupérer les infos utilisateur actuelles
+$userInfo = getUserInfo($userId); 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $profile = [
@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     ];
 
     if (editProfile($profile, $adresse)) {
-        echo '<script>alert("Profil mis à jour avec succès."); window.location.href = "profile.php";</script>';
+        echo '<script> window.location.href = "profile.php";</script>';
         exit;
     } else {
         echo '<script>alert("Une erreur est survenue lors de la mise à jour du profil.");</script>';

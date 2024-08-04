@@ -34,36 +34,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 } else {
     $query = "SELECT id_produit, nom FROM produits";
     $result = mysqli_query($connect, $query);
-    ?>
-    <div class="container mt-5">
-        <h1>Ajouter une promotion</h1>
-        <form method="post" action="admin_add_promo.php">
-            <div class="form-group">
-                <label for="id_produit">Produit :</label>
-                <select name="id_produit" id="id_produit" class="form-control">
-                    <?php
-                    while ($row = mysqli_fetch_assoc($result)) {
-                        echo '<option value="' . $row['id_produit'] . '">' . $row['nom'] . '</option>';
-                    }
-                    ?>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="valeur">Réduction (%) :</label>
-                <input type="number" name="valeur" id="valeur" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="date_debut">Date de début :</label>
-                <input type="date" name="date_debut" id="date_debut" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="date_fin">Date de fin :</label>
-                <input type="date" name="date_fin" id="date_fin" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Ajouter</button>
-        </form>
-    </div>
-    <?php
+?>
+
+<div class="container">
+    <h2 class="text-center">Ajouter une promotion</h2>
+    <form method="post" action="admin_add_promo.php">
+        <div class="form-group">
+            <label for="id_produit">Produit :</label>
+            <select name="id_produit" id="id_produit" class="form-control">
+                <?php
+                while ($row = mysqli_fetch_assoc($result)) {
+                    echo '<option value="' . $row['id_produit'] . '">' . $row['nom'] . '</option>';
+                }
+                ?>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="valeur">Réduction (%) :</label>
+            <input type="number" name="valeur" id="valeur" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="date_debut">Date de début :</label>
+            <input type="date" name="date_debut" id="date_debut" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="date_fin">Date de fin :</label>
+            <input type="date" name="date_fin" id="date_fin" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Ajouter</button>
+    </form>
+</div>
+<?php
 }
 
 include_once 'footer.php';

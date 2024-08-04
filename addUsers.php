@@ -6,7 +6,7 @@ $errorMessage = "";
 if (isset($_POST['addUser'])) {
     $resultat = addUserDB($_POST);
     if ($resultat === true) {
-        echo '<div class="alert alert-success" role="alert">Utilisateur ajouté avec succès.</div>';
+        echo '<div class="alert alert-success" role="alert">Inscription  reussie !!!</div>';
     } else {
         $errorMessage = $resultat;
     }
@@ -107,7 +107,7 @@ if (isset($_POST['addUser'])) {
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary" name="addUser">Ajouter Utilisateur</button>
+        <button type="submit" class="btn btn-primary" name="addUser">Soumettre</button>
     </form>
 </body>
 <?php include 'footer.php'; ?>
