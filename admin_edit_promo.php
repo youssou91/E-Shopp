@@ -72,6 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <body>
     <div class="container mt-5">
         <h1 class="text-center">Modifier une promotion</h1>
+        <h1 class="mb-4">Modifier une promotion</h1>
         <form method="post" action="admin_edit_promo.php">
             <input type="hidden" name="id_promotion" value='<?php echo htmlspecialchars($promo['id_promo']); ?>'>
             <div class="form-group">
