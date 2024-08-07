@@ -10,35 +10,7 @@ function connexionDB(){
         return $conn;
     }
 }
-   // Ajout de produits dans la base de données
-// function ajoutProduit($produit, $data) {
-//     $nom = $produit['nom_prod'];
-//     $prix = $produit['prix_prod'];
-//     $description = $produit['longueDescription_prod'];
-//     $courte_description = $produit['courteDescription_prod'];
-//     $quantite = $produit['quantite_prod'];
-//     $id_categorie = $produit['id_categorie'];
-//     $taille_produit = $produit['taille_produit'];
-    
-//     $sql = "INSERT INTO produits (nom, prix_unitaire, description, courte_description, quantite, id_categorie, taille_produit) VALUES (?, ?, ?, ?, ?, ?, ?)";
-//     $conn = connexionDB();
-//     $stmt = mysqli_prepare($conn, $sql);
-//     mysqli_stmt_bind_param($stmt, "sdssiis", $nom, $prix, $description, $courte_description, $quantite, $id_categorie, $taille_produit);
-//     $resultat = mysqli_stmt_execute($stmt);
-
-//     if ($resultat) {
-//         $id_produit = mysqli_insert_id($conn);
-//         if (uploadImage($data, $id_produit)) {
-//             return true;
-//         } else {
-//             echo "Erreur lors du téléchargement de l'image.";
-//             return false;
-//         }
-//     }
-
-//     echo "Erreur lors de l'insertion du produit : " . mysqli_error($conn);
-//     return false;
-// }
+ 
 function ajoutProduit($produit, $data) {
     $nom = $produit['nom_prod'];
     $prix = $produit['prix_prod'];
@@ -197,10 +169,9 @@ function editProfile($profile, $adresse){
     if (!emailFormat($profile['couriel'])) {
         throw new Exception("Le format de l'email n'est pas valide.");
     }
-
-    // Vérifier que l'email est unique
-    if (getElementByEmailForAddUser($profile['couriel'], $conn)) {
-        throw new Exception("Email existe déjà dans la base de données.");
+    // Vérifier que l'utilisateur a au moins 16 ans
+    if (calculAge($profile) < 16) {
+        throw new Exception("L'utilisateur doit avoir au moins 16 ans.");
     }
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("sssssi", 

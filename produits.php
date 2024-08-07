@@ -26,7 +26,7 @@ $produits = getProduits();
             <tbody>
                 <?php
                     $i = 1;
-                    foreach ($produits as $produit) { ?>
+                     foreach ($produits as $produit) { ?>
                         <tr>
                             <td><?= $i++; ?></td>
                             <td>
@@ -42,11 +42,13 @@ $produits = getProduits();
                                 <a href="modifier_produit.php?id=<?= $produit['id_produit']; ?>" class='btn btn-primary'>
                                     <i class='bi bi-pencil-square'></i>
                                 </a>
-                                <a href="suppression.php?id=<?= $produit['id_produit']; ?>" class='btn btn-danger'><i class='bi bi-trash-fill'></i></a>
+                                <button class='btn btn-danger' data-bs-toggle="modal" data-bs-target="#modalSupprimerProduit<?= $produit['id_produit']; ?>">
+                                    <i class='bi bi-trash-fill'></i>
+                                </button>
                             </td>
                         </tr>
-
-                        <!-- Modal pour chaque produit -->
+                    
+                        <!-- Modal pour les détails de chaque produit -->
                         <div class="modal fade" id="modal-<?= $produit['id_produit']; ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -74,8 +76,28 @@ $produits = getProduits();
                                 </div>
                             </div>
                         </div>
-                    <?php 
-                }?>
+                    
+                        <!-- Modal pour la suppression de chaque produit -->
+                        <div class="modal fade" id="modalSupprimerProduit<?= $produit['id_produit']; ?>" tabindex="-1" aria-labelledby="modalSupprimerLabel<?= $produit['id_produit']; ?>" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="modalSupprimerLabel<?= $produit['id_produit']; ?>">Confirmation de suppression</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Voulez-vous vraiment supprimer ce produit ?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                        <a href="suppression.php?id=<?= $produit['id_produit']; ?>" class="btn btn-danger">Supprimer</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php } 
+                    
+                ?>
             </tbody>
         </table>
         <script>

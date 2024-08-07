@@ -69,11 +69,35 @@ $index = 1;
                                         Traiter
                                     </button>
                                     <button type="submit" name="action" value="expedier" class="btn btn-warning btn-sm" <?php echo ($order['statut'] == 'Annulee') ? 'disabled' : ''; ?>>Expédier</button>
-                                    <button type="submit" name="action" value="annuler" class="btn btn-danger btn-sm" <?php echo ($order['statut'] == 'Annulee') ? 'disabled' : ''; ?>>Annuler</button>
-                                </form>
+                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalAnnulerCommande<?php echo htmlspecialchars($order['id_commande']); ?>" <?php echo ($order['statut'] == 'Annulee') ? 'disabled' : ''; ?>>
+                                        Annuler
+                                    </button>
+                                </form> 
                             </td>
                         </tr>
+
+                        <!-- Modal pour annuler la commande -->
+                        <div class="modal fade" id="modalAnnulerCommande<?php echo htmlspecialchars($order['id_commande']); ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Annulation de commande</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Voulez-vous vraiment annuler cette commande ?</p>
+                                        <form method="post" class="d-inline">
+                                            <input type="hidden" name="order_id" value="<?php echo htmlspecialchars($order['id_commande']); ?>">
+                                            <input type="hidden" name="action" value="annuler">
+                                            <button type="submit" name="action" value="annuler" class="btn btn-primary">Confirmer l'annulation</button>
+                                        </form>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     <?php endforeach; ?>
+
                 </tbody>
             </table>
         </div>

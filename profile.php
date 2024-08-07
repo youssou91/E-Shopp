@@ -13,7 +13,7 @@ $userOrders = getUserCommandWithStatus($userId);
 // Affichage des commandes avec leur état
 // Traitement des actions des commandes
 if (isset($_POST['action'])) {
-    $orderId = $_POST['order_id']; // Assurez-vous que le nom du champ correspond
+    $orderId = $_POST['order_id'];
     $action = $_POST['action'];
     switch ($action) {
         case 'traiter':
@@ -26,7 +26,8 @@ if (isset($_POST['action'])) {
             update_commandeOrderstatut($orderId, 'Annulee');
             break;
     }
-    echo '<script>window.location.href = "commandesAdmin.php";</script>';
+    echo '<script>window.location.href = "profile.php";</script>';
+    exit;
 }
 
 ?>
@@ -39,23 +40,7 @@ if (isset($_POST['action'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <style>
-        .status-pending {
-            background-color: #FFFFE0; /* Jaune clair pour "En attente" */
-        }
-        .status-processing {
-            background-color: #FFCC00; /* Jaune pour "En traitement" */
-        }
-        .status-shipped {
-            background-color: #ADD8E6; /* Bleu clair pour "Expédiée" */
-        }
-        .status-delivered {
-            background-color: #90EE90; /* Vert clair pour "Livrée" */
-        }
-        .status-cancelled {
-            background-color: #FF6347; /* Rouge tomate pour "Annulée" */
-        }
-    </style>
+    
 </head>
 <body>
     <div class="container mt-5">
@@ -100,10 +85,25 @@ if (isset($_POST['action'])) {
                                     <td><?= htmlspecialchars($order['statut']) ?></td>
                                     <td><a href="details_commande.php?id_commande=<?= htmlspecialchars($order['id_commande']) ?>" class="btn btn-info">Détails</a></td>
                                     <td>
-                                        <form action="annuler_commande.php" method="post">
-                                            <input type="hidden" name="id_commande" value="<?= htmlspecialchars($order['id_commande']) ?>">
-                                            <button type="submit" name="action" value="annuler" class="btn btn-danger" <?= ($order['statut'] == 'Annulee') ? 'disabled' : '' ?>>Annuler</button>
-                                        </form>
+                                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalAnnulerCommande<?= htmlspecialchars($order['id_commande'])?>">Annuler</button>
+                                        <div class="modal fade" id="modalAnnulerCommande<?= htmlspecialchars($order['id_commande']) ?>" tabindex="-1" aria-labelledby="annulerCommandeLabel<?= htmlspecialchars($order['id_commande']) ?>" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="annulerCommandeLabel<?= htmlspecialchars($order['id_commande']) ?>">Annulation de commande</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>Voulez-vous vraiment annuler cette commande ?</p>
+                                                        <form method="post" class="d-flex justify-content-between">
+                                                            <input type="hidden" name="order_id" value="<?= htmlspecialchars($order['id_commande']) ?>">
+                                                            <button type="submit" name="action" value="annuler" class="btn btn-primary">Confirmer l'annulation</button>
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td>
                                         <form action="paiement_commande.php" method="post">
