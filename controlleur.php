@@ -759,7 +759,7 @@ function miseAJourQuantiteProduit($conn, $id_produit, $quantite) {
 
 //fonction de gestion de la promotion
 function appliquerPromotion($total, $code_promotion) {
-    global $connect;
+    global $connect ;
     // Vérifiez si la promotion est valide et active
     global $connect;
     $query = "SELECT * FROM Promotions WHERE code_promotion = '$code_promotion' AND date_debut <= CURDATE() AND date_fin >= CURDATE()";
@@ -776,4 +776,27 @@ function appliquerPromotion($total, $code_promotion) {
         echo '<script>alert("Code promotionnel invalide ou expiré.")</script>';
     }
     return $total;
+}
+//
+
+
+function getOrderTotal($order_id) {
+     $connect = connexionDB();; 
+    if (!$connect) {
+        die("Erreur de connexion à la base de données.");
+    }
+    
+    $order_id = intval($order_id); // Sécurisez l'entrée
+    $query = "SELECT SUM(p.prix_unitaire * pc.quantite) AS total FROM commande c
+              INNER JOIN produit_commande pc ON c.id_commande = pc.id_commande
+              INNER JOIN produits p ON pc.id_produit = p.id_produit
+              WHERE c.id_commande = $order_id";
+    $result = mysqli_query($connect, $query);
+    
+    if (!$result) {
+        die("Erreur lors de la requête : " . mysqli_error($connect));
+    }
+    
+    $row = mysqli_fetch_assoc($result);
+    return $row['total'] ?? 0; // Retourne 0 si le total est nul ou non défini
 }

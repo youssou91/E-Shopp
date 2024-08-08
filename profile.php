@@ -110,6 +110,11 @@ if (isset($_POST['action'])) {
                                             <input type="hidden" name="id_commande" value="<?= htmlspecialchars($order['id_commande']) ?>">
                                             <button type="submit" class="btn btn-success" <?= ($order['statut'] == 'Annulee') ? 'disabled' : '' ?>>Payer</button>
                                         </form>
+
+                                        <!-- <form action="paiement_commande.php" method="post">
+                                            <input type="hidden" name="id_commande" value="<?= htmlspecialchars($order['id_commande']) ?>">
+                                            <button type="submit" class="btn btn-success" <?= ($order['statut'] == 'Annulee') ? 'disabled' : '' ?>>Payer</button>
+                                        </form> -->
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
