@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </select>
             </div>
             <div class="form-group">
-                <label for="id_promotion">Nom de la promotion :</label>
+                <!-- <label for="id_promotion">Nom de la promotion :</label>
                 <select name="id_promotion" id="id_promotion" class="form-control">
                     <?php
                     while ($row = mysqli_fetch_assoc($resultPromotions)) {
@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         echo '<option value="' . htmlspecialchars($row['id_promotion']) . '" ' . $selected . '>' . htmlspecialchars($row['type']) . '</option>';
                     }
                     ?>
-                </select>
+                </select> -->
             </div>
             <div class="form-group">
                 <label for="valeur">Réduction (%) :</label>

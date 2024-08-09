@@ -23,17 +23,28 @@ if (isset($_POST['id_commande'])) {
     <script src="https://www.paypal.com/sdk/js?client-id=AWW6GZJg_ShlBU7L34BaliLIpxsvWrKKEVzKCOUBKUXMX2wapM7rcA-SlpYwQ4Nr5i7-aliEssT-gF4N&components=buttons"></script>
 
     <style>
-        #paypal-button-container {
+        .container {
+            height: 100%;
+            margin: 0;
             display: flex;
             justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            text-align: center;
+        }
+        #paypal-button-container {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-<div class="container">
+    
     <h1 class="text-center">Paiement PayPal</h1>
-    <div id="paypal-button-container"></div>
-</div>
+    <div class="container">
+        <div id="paypal-button-container"></div>
+    </div>
 
 <script>
     paypal.Buttons({
